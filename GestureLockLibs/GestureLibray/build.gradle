@@ -49,8 +49,8 @@ install {
                 //添加开发者信息
                 developers {
                     developer {
-                        id 'leo' //填写开发者基本信息
-                        name 'leo'
+                        id 'leoliuzhou' //填写开发者基本信息
+                        name 'leoliuzhou'
                         email '850884963@qq.com'
                     }
                 }
@@ -70,24 +70,24 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
+//task sourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    classifier = 'sources'
+//}
+//
+//task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
 
 artifacts {
-    archives javadocJar
-    archives sourcesJar
+//    archives javadocJar
+//    archives sourcesJar
 }
 
 Properties properties = new Properties()
