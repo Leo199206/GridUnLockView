@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 
 /**
  * 屏幕变暗
- * Created by apple on 4/11/15.
  */
 public class ScreenObserver {
     private static String TAG = "ScreenObserver";

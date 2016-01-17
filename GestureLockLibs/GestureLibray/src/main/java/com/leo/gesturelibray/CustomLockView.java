@@ -9,6 +9,7 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,10 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 
 /**
- * Created by apple on 3/7/15.
+ * 手势解锁
  */
 public class CustomLockView extends View {
     //控件宽度
@@ -84,11 +86,15 @@ public class CustomLockView extends View {
     //外圈大小
     private float mOuterRingWidth = 120;
     //内圆大小
-    private float mInnerRingWidth = mOuterRingWidth / 4;
+    private float mInnerRingWidth = mOuterRingWidth / 3;
     //内圆间距
     private float mCircleSpacing;
     //圆圈半径
     private float mRadius;
+    //小圆半径
+    private float mInnerRingRadius;
+    //小圆半透明背景半径
+    private float mInnerBackgroudRadius;
     //内圆背景大小（半透明内圆）
     private float mInnerBackgroudWidth;
     //三角形边长
@@ -165,9 +171,9 @@ public class CustomLockView extends View {
         // 计算圆圈图片的大小
         roundW = width - (mOuterRingWidth * 3);
         roundW = roundW / 4 + mOuterRingWidth / 2;
-        mPoints[0][0] = new Point(getX(0), y + 0 + roundW);
-        mPoints[0][1] = new Point(getX(1), y + 0 + roundW);
-        mPoints[0][2] = new Point(getX(2), y + 0 + roundW);
+        mPoints[0][0] = new Point(getX(0), y + roundW);
+        mPoints[0][1] = new Point(getX(1), y + roundW);
+        mPoints[0][2] = new Point(getX(2), y + roundW);
         mPoints[1][0] = new Point(getX(0), y + height / 2);
         mPoints[1][1] = new Point(getX(1), y + height / 2);
         mPoints[1][2] = new Point(getX(2), y + height / 2);
@@ -182,7 +188,6 @@ public class CustomLockView extends View {
             }
         }
         isCache = true;
-        mArrowLength = mRadius * 0.25f;//三角形的边长
     }
 
 
@@ -190,24 +195,25 @@ public class CustomLockView extends View {
      * 计算圆以及连接线的尺寸
      */
     private void initGestureLockViewWidth() {
-        if (mCircleSpacing == -1) {
+        if (mCircleSpacing == 0) {
             // 计算每个GestureLockView的宽度
-            mOuterRingWidth = (int) (4 * width * 1.0f / (5 * 3 + 1));
+            mOuterRingWidth = width / 6;
             //计算每个GestureLockView的间距
-            mCircleSpacing = (int) (mOuterRingWidth * 0.25);
+            mCircleSpacing = (width - mOuterRingWidth * 3) / 4;
         } else {
             float mSpacing = mCircleSpacing * (3 + 1);
             mOuterRingWidth = (width - mSpacing) / 3;
         }
         if (mInnerRingWidth == 0) {
-            mInnerRingWidth = mOuterRingWidth / 4;
+            mInnerRingWidth = mOuterRingWidth / 3;
         }
         if (mInnerBackgroudWidth == 0) {
-            mInnerBackgroudWidth = (float) (mInnerRingWidth / 2 * 1.3);
-        } else {
-            mInnerBackgroudWidth = mInnerBackgroudWidth / 2;
+            mInnerBackgroudWidth = mInnerRingWidth * 1.3f;
         }
+        mInnerBackgroudRadius = mInnerBackgroudWidth / 2;
         mRadius = mOuterRingWidth / 2;
+        mInnerRingRadius = mInnerRingWidth / 2;
+        mArrowLength = mRadius * 0.25f;//三角形的边长
     }
 
 
@@ -306,7 +312,7 @@ public class CustomLockView extends View {
         // 绘制内圆
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(mColorOnRing);
-        canvas.drawCircle(p.x, p.y, mInnerRingWidth / 2, mPaint);
+        canvas.drawCircle(p.x, p.y, mInnerRingRadius, mPaint);
     }
 
 
@@ -330,7 +336,7 @@ public class CustomLockView extends View {
         // 绘制内圆
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(mColorOnRing);
-        canvas.drawCircle(p.x, p.y, mInnerRingWidth / 2, mPaint);
+        canvas.drawCircle(p.x, p.y, mInnerRingRadius, mPaint);
     }
 
 
@@ -357,7 +363,7 @@ public class CustomLockView extends View {
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(color);
         mPaint.setAlpha(100);
-        canvas.drawCircle(p.x, p.y, mInnerBackgroudWidth, mPaint);
+        canvas.drawCircle(p.x, p.y, mInnerBackgroudRadius, mPaint);
     }
 
 
@@ -578,7 +584,7 @@ public class CustomLockView extends View {
     private void drawArrow(Canvas canvas, Point a, int color) {
         // 绘制三角形，初始时是个默认箭头朝上的一个等腰三角形，用户绘制结束后，根据由两个GestureLockView决定需要旋转多少度
         Path mArrowPath = new Path();
-        float offset = mInnerBackgroudWidth * 2 + mOnStrokeWidth;//偏移量,定位三角形位置
+        float offset = mInnerBackgroudRadius + (mArrowLength + mRadius - mInnerBackgroudRadius) / 2;//偏移量,定位三角形位置
         mArrowPath.moveTo(a.x, a.y - offset);
         mArrowPath.lineTo(a.x - mArrowLength, a.y - offset
                 + mArrowLength);

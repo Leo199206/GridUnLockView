@@ -5,7 +5,6 @@ import com.leo.gesturelibray.entity.Point;
 
 /**
  * 手势密码工具类
- * Created by apple on 4/11/15.
  */
 public class LockUtil {
 

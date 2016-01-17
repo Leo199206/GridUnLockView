@@ -2,7 +2,6 @@ package com.leo.gesturelibray.entity;
 
 /**
  * 点位置
- * Created by apple on 4/11/15.
  */
 public class Point {
     public static int STATE_NORMAL = 0; // 未选中

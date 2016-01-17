@@ -4,7 +4,6 @@ import android.view.View;
 
 /**
  * 计算
- * Created by apple on 4/11/15.
  */
 public class MathUtil {
     /**
