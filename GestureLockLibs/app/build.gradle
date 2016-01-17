@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.leo"
-        minSdkVersion 19
-        targetSdkVersion 23
+        minSdkVersion 9
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }

@@ -1,6 +1,8 @@
 package com.leo.gesturelibray.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 
 import java.io.BufferedReader;
@@ -12,7 +14,6 @@ import java.util.UUID;
 
 /**
  * 字符串工具
- * <p/>
  */
 public class StringUtils {
 
@@ -22,6 +23,7 @@ public class StringUtils {
      * @param str
      * @return
      */
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public static boolean isEmpty(String... str) {
         if (str == null) {
             return true;

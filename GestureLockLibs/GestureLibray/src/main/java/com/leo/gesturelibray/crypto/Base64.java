@@ -268,6 +268,8 @@ public final class Base64 {
 
     /**
      * 加密字符串
+     * @return
+     * @param password
      */
     public static String encryptionString(int[] password) {
         String str = null;
