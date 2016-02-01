@@ -327,15 +327,15 @@ public class CustomLockView extends View {
         mPaint.setColor(Color.WHITE);
         canvas.drawCircle(p.x, p.y, mRadius, mPaint);
         // 绘制圆圈
-        mPaint.setColor(mColorOnRing);
+        mPaint.setColor(mColorErrorRing);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mOnStrokeWidth);
         canvas.drawCircle(p.x, p.y, mRadius, mPaint);
         // 绘制内圆背景
-        onDrawInnerCircleBackground(canvas, p, mColorOnRing);
+        onDrawInnerCircleBackground(canvas, p, mColorErrorRing);
         // 绘制内圆
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(mColorOnRing);
+        mPaint.setColor(mColorErrorRing);
         canvas.drawCircle(p.x, p.y, mInnerRingRadius, mPaint);
     }
 
@@ -536,8 +536,7 @@ public class CustomLockView extends View {
      * @param b
      */
     private void drawLine(Canvas canvas, Point a, Point b) {
-        int color = R.color.red_fa4;
-        mPaint.setColor(getResources().getColor(color));
+        mPaint.setColor(mColorOnRing);
         mPaint.setStrokeWidth(3);
         canvas.drawLine(a.x, a.y, b.x, b.y, mPaint);
     }
