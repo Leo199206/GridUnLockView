@@ -18,4 +18,7 @@
 #####设置密码允许输错次数: setErrorTimes(3);
 #####设置密码最少长度:setPasswordMinLength(3);
 
+###引用库方式：
+####gradle: compile 'com.leo.gesturelibray:GestureLibray:1.0.4'
+
 
