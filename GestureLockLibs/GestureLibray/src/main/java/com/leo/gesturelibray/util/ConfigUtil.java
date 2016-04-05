@@ -1,4 +1,4 @@
-package com.leo.util;
+package com.leo.gesturelibray.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

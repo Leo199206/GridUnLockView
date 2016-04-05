@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".SecondActivity"
+    tools:showIn="@layout/activity_second">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
+
+        <com.andexert.library.RippleView
+            rv_centered="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onBack">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="返回"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </com.andexert.library.RippleView>
+
+        <TextView
+            android:id="@+id/tv_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="请输入密码"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+    </FrameLayout>
+
+    <com.leo.gesturelibray.CustomLockView
+        android:id="@+id/lv_lock"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@color/white"
+        app:color_error_ring="#e91515"
+        app:color_on_ring="#64a460"
+        app:color_ordinary_ring="#3ce915"
+        app:inner_background_width="19dp"
+        app:inner_ring_width="14dp"
+        app:outer_ring_spacing_width="45dp" />
+</LinearLayout>

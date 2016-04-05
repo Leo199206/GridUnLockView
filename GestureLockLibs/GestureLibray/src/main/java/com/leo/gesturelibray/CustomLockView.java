@@ -9,12 +9,13 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.leo.gesturelibray.crypto.Base64;
 import com.leo.gesturelibray.entity.Point;
+import com.leo.gesturelibray.enums.LockMode;
+import com.leo.gesturelibray.util.ConfigUtil;
 import com.leo.gesturelibray.util.LockUtil;
 import com.leo.gesturelibray.util.MathUtil;
 import com.leo.gesturelibray.util.StringUtils;
@@ -23,13 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Logger;
 
 
 /**
  * 手势解锁
  */
 public class CustomLockView extends View {
+    //保存密码key
+    private String saveLockKey = "saveLockKey";
     //控件宽度
     private float width = 0;
     //控件高度
@@ -71,7 +73,7 @@ public class CustomLockView extends View {
     //是否显示滑动方向 默认为显示
     private boolean isShow = true;
     //验证或者设置 0:设置 1:验证
-    private int status = 0;
+    private LockMode mode = LockMode.SETTING_PASSWORD;
     //用于执行清除界面
     private Handler handler = new Handler();
     //间距
@@ -103,6 +105,8 @@ public class CustomLockView extends View {
     private int mNoFingerStrokeWidth = 2;
     //按下时圆圈的边宽
     private int mOnStrokeWidth = 4;
+    //编辑密码前是否验证
+    private boolean isEditVerify = false;
 
     //用于定时执行清除界面
     private Runnable run = new Runnable() {
@@ -370,9 +374,6 @@ public class CustomLockView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // 不可操作
-//        if (!isTouch) {
-//            return false;
-//        }
         if (errorTimes <= 0) {
             return false;
         }
@@ -446,10 +447,10 @@ public class CustomLockView extends View {
                     for (int i = 0; i < sPoints.size(); i++) {
                         indexs[i] = sPoints.get(i).index;
                     }
-                    if (status == 0) {
-                        invalidatePass(Base64.encryptionString(indexs), indexs);
-                    } else if (status == 1) {
-                        invalidateOldPsw(Base64.encryptionString(indexs), indexs);
+                    if (mode == LockMode.SETTING_PASSWORD || isEditVerify) {
+                        invalidSettingPass(Base64.encryptionString(indexs), indexs);
+                    } else {
+                        onVerifyPassword(Base64.encryptionString(indexs), indexs);
                     }
                 }
             }
@@ -640,31 +641,14 @@ public class CustomLockView extends View {
      *
      * @param password
      */
-    private void invalidatePass(String password, int[] indexs) {
+    private void invalidSettingPass(String password, int[] indexs) {
         if (showTimes == 0) {
             oldPassword = password;
-            mCompleteListener.onComplete(password, indexs);
+            mCompleteListener.onAginInputPassword(mode);
             showTimes++;
             reset();
         } else if (showTimes == 1) {
-            if (oldPassword != null && oldPassword.length() == password.length()) {
-                if (!StringUtils.isEquals(oldPassword, password)) {
-                    isCorrect = false;
-                }
-            } else {
-                isCorrect = false;
-            }
-            if (!isCorrect) {
-                error();
-                if (mCompleteListener != null) {
-                    mCompleteListener.onError(errorTimes);
-                }
-                postInvalidate();
-            } else {
-                if (mCompleteListener != null) {
-                    mCompleteListener.onComplete(password, indexs);
-                }
-            }
+            onVerifyPassword(password, indexs);
         }
     }
 
@@ -673,10 +657,12 @@ public class CustomLockView extends View {
      *
      * @param indexs
      */
-    private void invalidateOldPsw(String password, int[] indexs) {
-        if (oldPassword != null && password.length() == oldPassword.length()) {
+    private void onVerifyPassword(String password, int[] indexs) {
+        if (oldPassword != null && oldPassword.length() == password.length()) {
             if (!StringUtils.isEquals(oldPassword, password)) {
                 isCorrect = false;
+            } else {
+                isCorrect = true;
             }
         } else {
             isCorrect = false;
@@ -685,15 +671,32 @@ public class CustomLockView extends View {
             errorTimes--;
             error();
             if (mCompleteListener != null) {
-                mCompleteListener.onError(errorTimes);
+                mCompleteListener.onError(errorTimes + "");
             }
             postInvalidate();
         } else {
-            if (mCompleteListener != null) {
-                mCompleteListener.onComplete(password, indexs);
+            if (mCompleteListener == null) {
+                return;
             }
+            if (mode == LockMode.EDIT_PASSWORD && !isEditVerify) {
+                mCompleteListener.onInputNewPassword();
+                isEditVerify = true;
+                showTimes = 0;
+                return;
+            }
+            if (mode == LockMode.CLEAR_PASSWORD) {
+                ConfigUtil.getInstance(getContext()).remove(saveLockKey);
+                mCompleteListener.onComplete(password, indexs);
+            } else if (mode == LockMode.SETTING_PASSWORD) {
+                ConfigUtil.getInstance(getContext()).putString(saveLockKey, password);
+                mCompleteListener.onComplete(password, indexs);
+            } else {
+                isEditVerify = false;
+            }
+            mCompleteListener.onComplete(password, indexs);
         }
     }
+
 
     /**
      * 设置监听
@@ -716,13 +719,34 @@ public class CustomLockView extends View {
         /**
          * 绘制错误
          */
-        public void onError(int errorTimes);
+        public void onError(String errorTimes);
 
         /**
          * 密码太短
          */
         public void onPasswordIsShort(int passwordMinLength);
 
+
+        /**
+         * 设置密码再次输入密码
+         */
+        public void onAginInputPassword(LockMode mode);
+
+
+        /**
+         * 修改密码，输入新密码
+         */
+        public void onInputNewPassword();
+
+
+    }
+
+    public String getSaveLockKey() {
+        return saveLockKey;
+    }
+
+    public void setSaveLockKey(String saveLockKey) {
+        this.saveLockKey = saveLockKey;
     }
 
     public int getErrorTimes() {
@@ -733,15 +757,6 @@ public class CustomLockView extends View {
         this.errorTimes = errorTimes;
     }
 
-
-    //是否已经设置过密码
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
 
     //是否显示连接方向
     public boolean isShow() {
@@ -756,17 +771,26 @@ public class CustomLockView extends View {
         return oldPassword;
     }
 
-    //设置已经设置过的密码
+    //设置已经设置过的密码，验证密码时需要用到
     public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
     }
 
-    //最少密码长度
     public int getPasswordMinLength() {
         return passwordMinLength;
     }
 
+    //设置密码最少输入长度
     public void setPasswordMinLength(int passwordMinLength) {
         this.passwordMinLength = passwordMinLength;
+    }
+
+    public LockMode getMode() {
+        return mode;
+    }
+
+    //设置解锁模式
+    public void setMode(LockMode mode) {
+        this.mode = mode;
     }
 }
