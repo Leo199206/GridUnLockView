@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andexert.library.RippleView;
 import com.leo.Contants;
 import com.leo.R;
 import com.leo.gesturelibray.enums.LockMode;
@@ -15,9 +16,10 @@ import com.leo.util.ToastUtil;
 import static com.leo.gesturelibray.enums.LockMode.CLEAR_PASSWORD;
 import static com.leo.gesturelibray.enums.LockMode.SETTING_PASSWORD;
 
-public class SecondActivity extends BaseActivity {
+public class SecondActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
     private CustomLockView lockView;
     private TextView tv_text;
+    private RippleView rv_back;
 
 
     @Override
@@ -30,6 +32,7 @@ public class SecondActivity extends BaseActivity {
      */
     @Override
     public void initView() {
+        rv_back = (RippleView) findViewById(R.id.rv_back);
         lockView = (CustomLockView) findViewById(R.id.lv_lock);
         tv_text = (TextView) findViewById(R.id.tv_text);
     }
@@ -40,6 +43,7 @@ public class SecondActivity extends BaseActivity {
     @Override
     public void initListener() {
         lockView.setOnCompleteListener(onCompleteListener);
+        rv_back.setOnRippleCompleteListener(this);
     }
 
     /**
@@ -47,7 +51,7 @@ public class SecondActivity extends BaseActivity {
      */
     @Override
     public void initData() {
-        lockView.setShow(true);//不显示绘制方向
+        lockView.setShow(false);//不显示绘制方向
         lockView.setErrorTimes(3);//允许最大输入次数
         lockView.setPasswordMinLength(4);//密码最少位数
         lockView.setSaveLockKey(Contants.PASS_KEY);
@@ -68,12 +72,6 @@ public class SecondActivity extends BaseActivity {
         tv_text.setText(msg);
     }
 
-    /**
-     * onClick 返回
-     */
-    public void onBack(View view) {
-        onBackPressed();
-    }
 
     /**
      * 密码输入监听
@@ -166,5 +164,10 @@ public class SecondActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onComplete(RippleView rippleView) {
+        onBackPressed();
     }
 }
