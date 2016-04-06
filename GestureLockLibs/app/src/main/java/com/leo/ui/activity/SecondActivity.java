@@ -1,42 +1,58 @@
-package com.leo;
+package com.leo.ui.activity;
 
-import android.app.Activity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.leo.gesturelibray.CustomLockView;
+import com.leo.Contants;
+import com.leo.R;
 import com.leo.gesturelibray.enums.LockMode;
+import com.leo.gesturelibray.view.CustomLockView;
+import com.leo.ui.base.BaseActivity;
 import com.leo.util.PasswordUtil;
+import com.leo.util.ToastUtil;
 
 import static com.leo.gesturelibray.enums.LockMode.CLEAR_PASSWORD;
 import static com.leo.gesturelibray.enums.LockMode.SETTING_PASSWORD;
 
-public class SecondActivity extends Activity {
+public class SecondActivity extends BaseActivity {
     private CustomLockView lockView;
     private TextView tv_text;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
-        initView();
-        initData();
 
+    @Override
+    public void beforeInitView() {
+        setContentView(R.layout.activity_second);
     }
 
     /**
      * 初始化View
      */
-    private void initView() {
+    @Override
+    public void initView() {
         lockView = (CustomLockView) findViewById(R.id.lv_lock);
         tv_text = (TextView) findViewById(R.id.tv_text);
+    }
+
+    /**
+     * 设置监听回调
+     */
+    @Override
+    public void initListener() {
+        lockView.setOnCompleteListener(onCompleteListener);
+    }
+
+    /**
+     * 初始化数据
+     */
+    @Override
+    public void initData() {
         lockView.setShow(true);//不显示绘制方向
         lockView.setErrorTimes(3);//允许最大输入次数
         lockView.setPasswordMinLength(4);//密码最少位数
-        lockView.setOnCompleteListener(onCompleteListener);
         lockView.setSaveLockKey(Contants.PASS_KEY);
+        LockMode lockMode = (LockMode) getIntent().getSerializableExtra(Contants.INTENT_SECONDACTIVITY_KEY);
+        setLockMode(lockMode);
     }
 
 
@@ -53,13 +69,8 @@ public class SecondActivity extends Activity {
     }
 
     /**
-     * 初始化数据
+     * onClick 返回
      */
-    private void initData() {
-        LockMode lockMode = (LockMode) getIntent().getSerializableExtra(Contants.INTENT_SECONDACTIVITY_KEY);
-        setLockMode(lockMode);
-    }
-
     public void onBack(View view) {
         onBackPressed();
     }
@@ -70,28 +81,34 @@ public class SecondActivity extends Activity {
     CustomLockView.OnCompleteListener onCompleteListener = new CustomLockView.OnCompleteListener() {
         @Override
         public void onComplete(String password, int[] indexs) {
-            Toast.makeText(SecondActivity.this, getPassWordHint(), Toast.LENGTH_SHORT).show();
+            ToastUtil.showMessage(SecondActivity.this, getPassWordHint());
             finish();
         }
 
         @Override
         public void onError(String errorTimes) {
-            Toast.makeText(SecondActivity.this, "密码错误，还可以输入" + errorTimes + "次", Toast.LENGTH_SHORT).show();
+            ToastUtil.showMessage(SecondActivity.this, "密码错误，还可以输入" + errorTimes + "次");
         }
 
         @Override
         public void onPasswordIsShort(int passwordMinLength) {
-            Toast.makeText(SecondActivity.this, "密码不能少于" + passwordMinLength + "个点", Toast.LENGTH_SHORT).show();
+            ToastUtil.showMessage(SecondActivity.this, "密码不能少于" + passwordMinLength + "个点");
         }
 
         @Override
         public void onAginInputPassword(LockMode mode) {
-            Toast.makeText(SecondActivity.this, "请再次输入密码", Toast.LENGTH_SHORT).show();
+            ToastUtil.showMessage(SecondActivity.this, "请再次输入密码");
         }
 
         @Override
         public void onInputNewPassword() {
-            Toast.makeText(SecondActivity.this, "请输入新密码", Toast.LENGTH_SHORT).show();
+            ToastUtil.showMessage(SecondActivity.this, "请输入新密码");
+        }
+
+        @Override
+        public void onEnteredPasswordsDiffer() {
+            ToastUtil.showMessage(SecondActivity.this, "两次输入的密码不一致");
+            Toast.makeText(SecondActivity.this, "两次输入的密码不一致", Toast.LENGTH_SHORT).show();
         }
 
     };

@@ -1,4 +1,4 @@
-package com.leo.gesturelibray;
+package com.leo.gesturelibray.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.leo.gesturelibray.R;
 import com.leo.gesturelibray.crypto.Base64;
 import com.leo.gesturelibray.entity.Point;
 import com.leo.gesturelibray.enums.LockMode;
@@ -245,6 +246,21 @@ public class CustomLockView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(true);
         // 画连线
+        drawAllLine(canvas);
+        // 画所有点
+        drawAllPoint(canvas);
+        // 是否绘制方向图标
+        if (isShow) {
+            drawDirectionArrow(canvas);
+        }
+    }
+
+    /**
+     * 绘制解锁连接线
+     *
+     * @param canvas
+     */
+    private void drawAllLine(Canvas canvas) {
         if (sPoints.size() > 0) {
             Point tp = sPoints.get(0);
             for (int i = 1; i < sPoints.size(); i++) {
@@ -262,7 +278,15 @@ public class CustomLockView extends View {
                 drawLine(canvas, tp, new Point((int) moveingX + 20, (int) moveingY));
             }
         }
-        // 画所有点
+    }
+
+
+    /**
+     * 绘制解锁图案所有的点
+     *
+     * @param canvas
+     */
+    private void drawAllPoint(Canvas canvas) {
         for (int i = 0; i < mPoints.length; i++) {
             for (int j = 0; j < mPoints[i].length; j++) {
                 Point p = mPoints[i][j];
@@ -277,21 +301,29 @@ public class CustomLockView extends View {
                 }
             }
         }
-        if (isShow) {
-            // 绘制方向图标
-            if (sPoints.size() > 0) {
-                Point tp = sPoints.get(0);
-                for (int i = 1; i < sPoints.size(); i++) {
-                    //根据移动的方向绘制方向图标
-                    Point p = sPoints.get(i);
-                    if (isCorrect) {
-                        drawDirectionArrow(canvas, tp, p, mColorOnRing);
-                    } else {
-                        drawDirectionArrow(canvas, tp, p, mColorErrorRing);
-                    }
-                    tp = p;
-                }
+    }
+
+
+    /**
+     * 绘制解锁图案连接的方向
+     *
+     * @param canvas
+     */
+    private void drawDirectionArrow(Canvas canvas) {
+        // 绘制方向图标
+        if (sPoints.size() <= 0) {
+            return;
+        }
+        Point tp = sPoints.get(0);
+        for (int i = 1; i < sPoints.size(); i++) {
+            //根据移动的方向绘制方向图标
+            Point p = sPoints.get(i);
+            if (isCorrect) {
+                drawDirectionArrow(canvas, tp, p, mColorOnRing);
+            } else {
+                drawDirectionArrow(canvas, tp, p, mColorErrorRing);
             }
+            tp = p;
         }
     }
 
@@ -387,26 +419,10 @@ public class CustomLockView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: // 点下
                 // 如果正在清除密码,则取消
-                if (task != null) {
-                    task.cancel();
-                    task = null;
-                }
-                // 删除之前的点
-                reset();
-                p = checkSelectPoint(ex, ey);
-                if (p != null) {
-                    checking = true;
-                }
+                p = actionDown(ex, ey);
                 break;
             case MotionEvent.ACTION_MOVE: // 移动
-                if (checking) {
-                    p = checkSelectPoint(ex, ey);
-                    if (p == null) {
-                        movingNoPoint = true;
-                        moveingX = ex;
-                        moveingY = ey;
-                    }
-                }
+                p = actionMove(ex, ey);
                 break;
             case MotionEvent.ACTION_UP: // 提起
                 p = checkSelectPoint(ex, ey);
@@ -431,33 +447,83 @@ public class CustomLockView extends View {
             }
         }
         if (isFinish) {
-            handler.postDelayed(run, 500);
-            if (this.sPoints.size() == 1) {
-                this.reset();
-            } else if (this.sPoints.size() < passwordMinLength
-                    && this.sPoints.size() > 0) {
-                clearPassword();
-                if (mCompleteListener != null) {
-                    //密码太短
-                    mCompleteListener.onPasswordIsShort(passwordMinLength);
-                }
-            } else if (mCompleteListener != null) {
-                if (this.sPoints.size() >= passwordMinLength) {
-                    int[] indexs = new int[sPoints.size()];
-                    for (int i = 0; i < sPoints.size(); i++) {
-                        indexs[i] = sPoints.get(i).index;
-                    }
-                    if (mode == LockMode.SETTING_PASSWORD || isEditVerify) {
-                        invalidSettingPass(Base64.encryptionString(indexs), indexs);
-                    } else {
-                        onVerifyPassword(Base64.encryptionString(indexs), indexs);
-                    }
-                }
-            }
+            actionFinish();
         }
         postInvalidate();
         return true;
     }
+
+    /**
+     * 解锁图案绘制完成
+     */
+    private void actionFinish() {
+        handler.postDelayed(run, 500);
+        if (this.sPoints.size() == 1) {
+            this.reset();
+            return;
+        }
+        if (this.sPoints.size() < passwordMinLength
+                && this.sPoints.size() > 0) {
+            clearPassword();
+            if (mCompleteListener != null) {
+                //密码太短
+                mCompleteListener.onPasswordIsShort(passwordMinLength);
+            }
+            return;
+        }
+        if (this.sPoints.size() >= passwordMinLength) {
+            int[] indexs = new int[sPoints.size()];
+            for (int i = 0; i < sPoints.size(); i++) {
+                indexs[i] = sPoints.get(i).index;
+            }
+            if (mode == LockMode.SETTING_PASSWORD || isEditVerify) {
+                invalidSettingPass(Base64.encryptionString(indexs), indexs);
+            } else {
+                onVerifyPassword(Base64.encryptionString(indexs), indexs);
+            }
+        }
+    }
+
+    /**
+     * 按下
+     *
+     * @param ex
+     * @param ey
+     */
+    private Point actionDown(float ex, float ey) {
+        // 如果正在清除密码,则取消
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+        // 删除之前的点
+        reset();
+        Point p = checkSelectPoint(ex, ey);
+        if (p != null) {
+            checking = true;
+        }
+        return p;
+    }
+
+    /**
+     * 移动
+     *
+     * @param ex
+     * @param ey
+     */
+    private Point actionMove(float ex, float ey) {
+        Point p = null;
+        if (checking) {
+            p = checkSelectPoint(ex, ey);
+            if (p == null) {
+                movingNoPoint = true;
+                moveingX = ex;
+                moveingY = ey;
+            }
+        }
+        return p;
+    }
+
 
     /**
      * 向选中点集合中添加一个点
@@ -644,7 +710,9 @@ public class CustomLockView extends View {
     private void invalidSettingPass(String password, int[] indexs) {
         if (showTimes == 0) {
             oldPassword = password;
-            mCompleteListener.onAginInputPassword(mode);
+            if (mCompleteListener != null) {
+                mCompleteListener.onAginInputPassword(mode);
+            }
             showTimes++;
             reset();
         } else if (showTimes == 1) {
@@ -668,33 +736,58 @@ public class CustomLockView extends View {
             isCorrect = false;
         }
         if (!isCorrect) {
-            errorTimes--;
-            error();
-            if (mCompleteListener != null) {
-                mCompleteListener.onError(errorTimes + "");
-            }
-            postInvalidate();
+            drawPassWordError();
         } else {
-            if (mCompleteListener == null) {
-                return;
-            }
-            if (mode == LockMode.EDIT_PASSWORD && !isEditVerify) {
-                mCompleteListener.onInputNewPassword();
-                isEditVerify = true;
-                showTimes = 0;
-                return;
-            }
-            if (mode == LockMode.CLEAR_PASSWORD) {
-                ConfigUtil.getInstance(getContext()).remove(saveLockKey);
-                mCompleteListener.onComplete(password, indexs);
-            } else if (mode == LockMode.SETTING_PASSWORD) {
-                ConfigUtil.getInstance(getContext()).putString(saveLockKey, password);
-                mCompleteListener.onComplete(password, indexs);
-            } else {
-                isEditVerify = false;
-            }
-            mCompleteListener.onComplete(password, indexs);
+            drawPassWordRight(password, indexs);
         }
+    }
+
+    /**
+     * 密码输入错误回调
+     */
+    private void drawPassWordError() {
+        if (mCompleteListener == null) {
+            return;
+        }
+        if (mode == LockMode.SETTING_PASSWORD) {
+            mCompleteListener.onEnteredPasswordsDiffer();
+        } else if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
+            mCompleteListener.onEnteredPasswordsDiffer();
+        } else {
+            errorTimes--;
+            mCompleteListener.onError(errorTimes + "");
+        }
+        error();
+        postInvalidate();
+    }
+
+
+    /**
+     * 输入密码正确相关回调
+     *
+     * @param indexs
+     * @param password
+     */
+    private void drawPassWordRight(String password, int[] indexs) {
+        if (mCompleteListener == null) {
+            return;
+        }
+        if (mode == LockMode.EDIT_PASSWORD && !isEditVerify) {//修改密码，旧密码正确，进行新密码设置
+            mCompleteListener.onInputNewPassword();
+            isEditVerify = true;
+            showTimes = 0;
+            return;
+        }
+        if (mode == LockMode.CLEAR_PASSWORD) {//清除密码
+            ConfigUtil.getInstance(getContext()).remove(saveLockKey);
+            mCompleteListener.onComplete(password, indexs);
+        } else if (mode == LockMode.SETTING_PASSWORD) {//完成密码设置，存储到本地
+            ConfigUtil.getInstance(getContext()).putString(saveLockKey, password);
+            mCompleteListener.onComplete(password, indexs);
+        } else {
+            isEditVerify = false;
+        }
+        mCompleteListener.onComplete(password, indexs);
     }
 
 
@@ -737,6 +830,11 @@ public class CustomLockView extends View {
          * 修改密码，输入新密码
          */
         public void onInputNewPassword();
+
+        /**
+         * 两次输入密码不一致
+         */
+        public void onEnteredPasswordsDiffer();
 
 
     }

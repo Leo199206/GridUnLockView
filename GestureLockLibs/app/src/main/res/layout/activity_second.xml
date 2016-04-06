@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".SecondActivity">
+    tools:context=".ui.activity.SecondActivity">
 
     <include layout="@layout/content_second" />
 
