@@ -28,7 +28,7 @@ public class SlidrUtil {
                 .velocityThreshold(2400)
                 .distanceThreshold(0.25f)
                 .listener(slidrListener)
-                .edge(true | false)
+                .edge(true)
                 .edgeSize(0.18f)
                 .build();
         return config;

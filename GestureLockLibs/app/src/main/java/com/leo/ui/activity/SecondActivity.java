@@ -1,8 +1,6 @@
 package com.leo.ui.activity;
 
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.andexert.library.RippleView;
 import com.leo.Contants;
@@ -11,15 +9,21 @@ import com.leo.gesturelibray.enums.LockMode;
 import com.leo.gesturelibray.view.CustomLockView;
 import com.leo.ui.base.BaseActivity;
 import com.leo.util.PasswordUtil;
-import com.leo.util.ToastUtil;
+
+import butterknife.Bind;
 
 import static com.leo.gesturelibray.enums.LockMode.CLEAR_PASSWORD;
 import static com.leo.gesturelibray.enums.LockMode.SETTING_PASSWORD;
 
 public class SecondActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
-    private CustomLockView lockView;
-    private TextView tv_text;
-    private RippleView rv_back;
+    @Bind(R.id.rv_back)
+    RippleView rvBack;
+    @Bind(R.id.tv_text)
+    TextView tvText;
+    @Bind(R.id.lv_lock)
+    CustomLockView lvLock;
+    @Bind(R.id.tv_hint)
+    TextView tvHint;
 
 
     @Override
@@ -32,9 +36,6 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     @Override
     public void initView() {
-        rv_back = (RippleView) findViewById(R.id.rv_back);
-        lockView = (CustomLockView) findViewById(R.id.lv_lock);
-        tv_text = (TextView) findViewById(R.id.tv_text);
     }
 
     /**
@@ -42,8 +43,8 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     @Override
     public void initListener() {
-        lockView.setOnCompleteListener(onCompleteListener);
-        rv_back.setOnRippleCompleteListener(this);
+        lvLock.setOnCompleteListener(onCompleteListener);
+        rvBack.setOnRippleCompleteListener(this);
     }
 
     /**
@@ -51,10 +52,11 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     @Override
     public void initData() {
-        lockView.setShow(false);//不显示绘制方向
-        lockView.setErrorTimes(3);//允许最大输入次数
-        lockView.setPasswordMinLength(4);//密码最少位数
-        lockView.setSaveLockKey(Contants.PASS_KEY);
+        lvLock.setShow(true);//显示绘制方向
+        lvLock.setErrorNumber(3);//允许最大输入次数
+        lvLock.setPasswordMinLength(4);//密码最少位数
+        lvLock.setSavePin(true);//编辑密码或设置密码时，是否将密码保存到本地，配合setSaveLockKey使用
+        lvLock.setSaveLockKey(Contants.PASS_KEY);//保存密码Key
         LockMode lockMode = (LockMode) getIntent().getSerializableExtra(Contants.INTENT_SECONDACTIVITY_KEY);
         setLockMode(lockMode);
     }
@@ -64,12 +66,15 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      * 密码输入模式
      */
     private void setLockMode(LockMode mode, String password, String msg) {
-        lockView.setMode(mode);
-        lockView.setErrorTimes(3);
+        lvLock.setMode(mode);
+        lvLock.setErrorNumber(3);
         if (mode != SETTING_PASSWORD) {
-            lockView.setOldPassword(password);
+            tvHint.setText("请输入已经设置过的密码");
+            lvLock.setOldPassword(password);
+        } else {
+            tvHint.setText("请输入要设置的密码");
         }
-        tv_text.setText(msg);
+        tvText.setText(msg);
     }
 
 
@@ -79,34 +84,39 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
     CustomLockView.OnCompleteListener onCompleteListener = new CustomLockView.OnCompleteListener() {
         @Override
         public void onComplete(String password, int[] indexs) {
-            ToastUtil.showMessage(SecondActivity.this, getPassWordHint());
+            tvHint.setText(getPassWordHint());
             finish();
         }
 
         @Override
         public void onError(String errorTimes) {
-            ToastUtil.showMessage(SecondActivity.this, "密码错误，还可以输入" + errorTimes + "次");
+            tvHint.setText("密码错误，还可以输入" + errorTimes + "次");
         }
 
         @Override
         public void onPasswordIsShort(int passwordMinLength) {
-            ToastUtil.showMessage(SecondActivity.this, "密码不能少于" + passwordMinLength + "个点");
+            tvHint.setText("密码不能少于" + passwordMinLength + "个点");
         }
 
         @Override
-        public void onAginInputPassword(LockMode mode) {
-            ToastUtil.showMessage(SecondActivity.this, "请再次输入密码");
+        public void onAginInputPassword(LockMode mode, String password, int[] indexs) {
+            tvHint.setText("请再次输入密码");
         }
+
 
         @Override
         public void onInputNewPassword() {
-            ToastUtil.showMessage(SecondActivity.this, "请输入新密码");
+            tvHint.setText("请输入新密码");
         }
 
         @Override
         public void onEnteredPasswordsDiffer() {
-            ToastUtil.showMessage(SecondActivity.this, "两次输入的密码不一致");
-            Toast.makeText(SecondActivity.this, "两次输入的密码不一致", Toast.LENGTH_SHORT).show();
+            tvHint.setText("两次输入的密码不一致");
+        }
+
+        @Override
+        public void onErrorNumberMany() {
+            tvHint.setText("密码错误次数超过限制，不能再输入");
         }
 
     };
@@ -117,7 +127,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     private String getPassWordHint() {
         String str = null;
-        switch (lockView.getMode()) {
+        switch (lvLock.getMode()) {
             case SETTING_PASSWORD:
                 str = "密码设置成功";
                 break;
@@ -128,7 +138,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
                 str = "密码正确";
                 break;
             case CLEAR_PASSWORD:
-                str = "密码已经关闭";
+                str = "密码已经清除";
                 break;
         }
         return str;
@@ -157,7 +167,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
                 setLockMode(LockMode.VERIFY_PASSWORD, PasswordUtil.getPin(this), str);
                 break;
         }
-        tv_text.setText(str);
+        tvText.setText(str);
     }
 
 
@@ -170,4 +180,5 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
     public void onComplete(RippleView rippleView) {
         onBackPressed();
     }
+
 }

@@ -2,7 +2,6 @@ package com.leo.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
@@ -13,12 +12,22 @@ import com.leo.gesturelibray.util.StringUtils;
 import com.leo.ui.base.BaseActivity;
 import com.leo.util.PasswordUtil;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by leo on 16/4/5.
  * 主activity
  */
 public class MainActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
-    private RippleView rv_clear, rv_setting, rv_edit, rv_verify;
+    @Bind(R.id.rv_setting)
+    RippleView rvSetting;
+    @Bind(R.id.rv_edit)
+    RippleView rvEdit;
+    @Bind(R.id.rv_verify)
+    RippleView rvVerify;
+    @Bind(R.id.rv_clear)
+    RippleView rvClear;
 
     @Override
     public void beforeInitView() {
@@ -27,18 +36,18 @@ public class MainActivity extends BaseActivity implements RippleView.OnRippleCom
 
     @Override
     public void initView() {
-        rv_clear = (RippleView) findViewById(R.id.rv_clear);
-        rv_edit = (RippleView) findViewById(R.id.rv_edit);
-        rv_setting = (RippleView) findViewById(R.id.rv_setting);
-        rv_verify = (RippleView) findViewById(R.id.rv_verify);
+        rvClear = (RippleView) findViewById(R.id.rv_clear);
+        rvEdit = (RippleView) findViewById(R.id.rv_edit);
+        rvSetting = (RippleView) findViewById(R.id.rv_setting);
+        rvVerify = (RippleView) findViewById(R.id.rv_verify);
     }
 
     @Override
     public void initListener() {
-        rv_clear.setOnRippleCompleteListener(this);
-        rv_edit.setOnRippleCompleteListener(this);
-        rv_setting.setOnRippleCompleteListener(this);
-        rv_verify.setOnRippleCompleteListener(this);
+        rvClear.setOnRippleCompleteListener(this);
+        rvEdit.setOnRippleCompleteListener(this);
+        rvSetting.setOnRippleCompleteListener(this);
+        rvVerify.setOnRippleCompleteListener(this);
     }
 
     @Override
@@ -79,4 +88,5 @@ public class MainActivity extends BaseActivity implements RippleView.OnRippleCom
         intent.putExtra(Contants.INTENT_SECONDACTIVITY_KEY, mode);
         startActivity(intent);
     }
+
 }

@@ -8,6 +8,8 @@ import com.leo.util.SlidrUtil;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrListener;
 
+import butterknife.ButterKnife;
+
 /**
  * Created by leo on 16/4/6.
  * 基类
@@ -17,6 +19,7 @@ public abstract class BaseActivity extends AppCompatActivity implements SlidrLis
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         beforeInitView();
+        ButterKnife.bind(this);//调用注解框架
         initView();
         initListener();
         initData();

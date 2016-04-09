@@ -27,25 +27,6 @@
     </com.andexert.library.RippleView>
 
     <com.andexert.library.RippleView
-        android:id="@+id/rv_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        ripple:rv_centered="true"
-        ripple:rv_zoom="true">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            android:background="@color/colorPrimary"
-            android:padding="10dp"
-            android:text="修改密码"
-            android:textColor="@color/white" />
-    </com.andexert.library.RippleView>
-
-    <com.andexert.library.RippleView
         android:id="@+id/rv_verify"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,6 +42,25 @@
             android:background="@color/colorPrimary"
             android:padding="10dp"
             android:text="验证密码"
+            android:textColor="@color/white" />
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:id="@+id/rv_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        ripple:rv_centered="true"
+        ripple:rv_zoom="true">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:padding="10dp"
+            android:text="修改密码"
             android:textColor="@color/white" />
     </com.andexert.library.RippleView>
 

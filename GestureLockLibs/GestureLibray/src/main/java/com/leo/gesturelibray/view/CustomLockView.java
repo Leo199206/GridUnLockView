@@ -9,6 +9,7 @@ import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -33,6 +34,8 @@ import java.util.TimerTask;
 public class CustomLockView extends View {
     //保存密码key
     private String saveLockKey = "saveLockKey";
+    //是否保存保存PIN
+    private boolean isSavePin = false;
     //控件宽度
     private float width = 0;
     //控件高度
@@ -49,8 +52,6 @@ public class CustomLockView extends View {
     private boolean movingNoPoint = false;
     //正在移动的x,y坐标
     float moveingX, moveingY;
-    //是否可操作
-    private boolean isTouch = true;
     //密码最小长度
     private int passwordMinLength = 3;
     //判断是否触摸屏幕
@@ -62,9 +63,9 @@ public class CustomLockView extends View {
     //监听
     private OnCompleteListener mCompleteListener;
     //清除痕迹的时间
-    private long CLEAR_TIME = 0;
+    private long CLEAR_TIME = 100;
     //错误限制 默认为4次
-    private int errorTimes = 4;
+    private int errorNumber = 4;
     //记录上一次滑动的密码
     private String oldPassword = null;
     //记录当前第几次触发 默认为0次
@@ -80,7 +81,7 @@ public class CustomLockView extends View {
     //间距
     float roundW;
     //普通状态下圈的颜色
-    private int mColorOrdinaryRing = 0xFF378FC9;
+    private int mColorUpRing = 0xFF378FC9;
     //按下时圈的颜色
     private int mColorOnRing = 0xFF378FC9;
     //松开手时的颜色
@@ -118,7 +119,6 @@ public class CustomLockView extends View {
             postInvalidate();
         }
     };
-    private String errorStr = "";
 
     public CustomLockView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -133,8 +133,8 @@ public class CustomLockView extends View {
             int attr = a.getIndex(i);
             if (attr == R.styleable.GestureLock_styleable_color_on_ring) {
                 mColorOnRing = a.getColor(attr, mColorOnRing);
-            } else if (attr == R.styleable.GestureLock_styleable_color_ordinary_ring) {
-                mColorOrdinaryRing = a.getColor(attr, mColorOrdinaryRing);
+            } else if (attr == R.styleable.GestureLock_styleable_color_up_ring) {
+                mColorUpRing = a.getColor(attr, mColorUpRing);
             } else if (attr == R.styleable.GestureLock_styleable_color_error_ring) {
                 mColorErrorRing = a.getColor(attr, mColorErrorRing);
             } else if (attr == R.styleable.GestureLock_styleable_inner_ring_width) {
@@ -173,7 +173,7 @@ public class CustomLockView extends View {
     private void initCache() {
         float y = 0;
         initGestureLockViewWidth();
-        // 计算圆圈图片的大小
+        // 计算圆圈的大小及位置
         roundW = width - (mOuterRingWidth * 3);
         roundW = roundW / 4 + mOuterRingWidth / 2;
         mPoints[0][0] = new Point(getX(0), y + roundW);
@@ -201,24 +201,35 @@ public class CustomLockView extends View {
      */
     private void initGestureLockViewWidth() {
         if (mCircleSpacing == 0) {
-            // 计算每个GestureLockView的宽度
-            mOuterRingWidth = width / 6;
-            //计算每个GestureLockView的间距
-            mCircleSpacing = (width - mOuterRingWidth * 3) / 4;
+            initCircleSpacing();
         } else {
             float mSpacing = mCircleSpacing * (3 + 1);
             mOuterRingWidth = (width - mSpacing) / 3;
         }
-        if (mInnerRingWidth == 0) {
+        if (mOuterRingWidth <= 0) {//防止手动设置圆圆之间间距过大问题
+            initCircleSpacing();
+        }
+        if (mInnerRingWidth == 0 || mInnerRingWidth >= mOuterRingWidth) {
             mInnerRingWidth = mOuterRingWidth / 3;
         }
-        if (mInnerBackgroudWidth == 0) {
+        if (mInnerBackgroudWidth == 0 || mInnerBackgroudWidth >= mOuterRingWidth) {
             mInnerBackgroudWidth = mInnerRingWidth * 1.3f;
         }
         mInnerBackgroudRadius = mInnerBackgroudWidth / 2;
         mRadius = mOuterRingWidth / 2;
         mInnerRingRadius = mInnerRingWidth / 2;
         mArrowLength = mRadius * 0.25f;//三角形的边长
+    }
+
+
+    /**
+     * 当外圈间距没有设置时，初始化外圆之间的间距
+     */
+    private void initCircleSpacing() {
+        // 计算每个GestureLockView的宽度
+        mOuterRingWidth = width / 6;
+        //计算每个GestureLockView的间距
+        mCircleSpacing = (width - mOuterRingWidth * 3) / 4;
     }
 
 
@@ -266,10 +277,10 @@ public class CustomLockView extends View {
             for (int i = 1; i < sPoints.size(); i++) {
                 //根据移动的方向绘制线
                 Point p = sPoints.get(i);
-                if (isCorrect) {
-                    drawLine(canvas, tp, p);
-                } else {
+                if (p.state == Point.STATE_CHECK_ERROR) {
                     drawErrorLine(canvas, tp, p);
+                } else {
+                    drawLine(canvas, tp, p);
                 }
                 tp = p;
             }
@@ -318,10 +329,10 @@ public class CustomLockView extends View {
         for (int i = 1; i < sPoints.size(); i++) {
             //根据移动的方向绘制方向图标
             Point p = sPoints.get(i);
-            if (isCorrect) {
-                drawDirectionArrow(canvas, tp, p, mColorOnRing);
-            } else {
+            if (p.state == Point.STATE_CHECK_ERROR) {
                 drawDirectionArrow(canvas, tp, p, mColorErrorRing);
+            } else {
+                drawDirectionArrow(canvas, tp, p, mColorOnRing);
             }
             tp = p;
         }
@@ -384,7 +395,7 @@ public class CustomLockView extends View {
     private void onDrawNoFinger(Canvas canvas, Point p) {
         // 绘制外圆
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setColor(mColorOrdinaryRing);
+        mPaint.setColor(mColorUpRing);
         mPaint.setStrokeWidth(mNoFingerStrokeWidth);
         canvas.drawCircle(p.x, p.y, mRadius, mPaint);
     }
@@ -406,7 +417,7 @@ public class CustomLockView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // 不可操作
-        if (errorTimes <= 0) {
+        if (errorNumber <= 0) {
             return false;
         }
         isCorrect = true;
@@ -464,10 +475,10 @@ public class CustomLockView extends View {
         }
         if (this.sPoints.size() < passwordMinLength
                 && this.sPoints.size() > 0) {
-            clearPassword();
+            // clearPassword(CLEAR_TIME);
+            error();
             if (mCompleteListener != null) {
-                //密码太短
-                mCompleteListener.onPasswordIsShort(passwordMinLength);
+                mCompleteListener.onPasswordIsShort(passwordMinLength);  //密码太短
             }
             return;
         }
@@ -589,7 +600,7 @@ public class CustomLockView extends View {
      */
     public void clearCurrent() {
         showTimes = 0;
-        errorTimes = 4;
+        errorNumber = 4;
         isCorrect = true;
         reset();
         postInvalidate();
@@ -667,13 +678,7 @@ public class CustomLockView extends View {
     /**
      * 清除密码
      */
-    private void clearPassword() {
-        clearPassword(CLEAR_TIME);
-    }
-
-    /**
-     * 清除密码
-     */
+    @Deprecated
     private void clearPassword(final long time) {
         if (time > 1) {
             if (task != null) {
@@ -711,7 +716,7 @@ public class CustomLockView extends View {
         if (showTimes == 0) {
             oldPassword = password;
             if (mCompleteListener != null) {
-                mCompleteListener.onAginInputPassword(mode);
+                mCompleteListener.onAginInputPassword(mode, password, indexs);
             }
             showTimes++;
             reset();
@@ -754,8 +759,12 @@ public class CustomLockView extends View {
         } else if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
             mCompleteListener.onEnteredPasswordsDiffer();
         } else {
-            errorTimes--;
-            mCompleteListener.onError(errorTimes + "");
+            errorNumber--;
+            if (errorNumber <= 0) {
+                mCompleteListener.onErrorNumberMany();
+            } else {
+                mCompleteListener.onError(errorNumber + "");
+            }
         }
         error();
         postInvalidate();
@@ -778,16 +787,29 @@ public class CustomLockView extends View {
             showTimes = 0;
             return;
         }
-        if (mode == LockMode.CLEAR_PASSWORD) {//清除密码
+        if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
+            savePassWord(password);
+        } else if (mode == LockMode.CLEAR_PASSWORD) {//清除密码
             ConfigUtil.getInstance(getContext()).remove(saveLockKey);
             mCompleteListener.onComplete(password, indexs);
         } else if (mode == LockMode.SETTING_PASSWORD) {//完成密码设置，存储到本地
-            ConfigUtil.getInstance(getContext()).putString(saveLockKey, password);
             mCompleteListener.onComplete(password, indexs);
+            savePassWord(password);
         } else {
             isEditVerify = false;
         }
         mCompleteListener.onComplete(password, indexs);
+    }
+
+    /**
+     * 存储密码到本地
+     *
+     * @param password
+     */
+    private void savePassWord(String password) {
+        if (isSavePin) {
+            ConfigUtil.getInstance(getContext()).putString(saveLockKey, password);
+        }
     }
 
 
@@ -807,35 +829,39 @@ public class CustomLockView extends View {
         /**
          * 画完了
          */
-        public void onComplete(String password, int[] indexs);
+        void onComplete(String password, int[] indexs);
 
         /**
          * 绘制错误
          */
-        public void onError(String errorTimes);
+        void onError(String errorTimes);
 
         /**
          * 密码太短
          */
-        public void onPasswordIsShort(int passwordMinLength);
+        void onPasswordIsShort(int passwordMinLength);
 
 
         /**
          * 设置密码再次输入密码
          */
-        public void onAginInputPassword(LockMode mode);
+        void onAginInputPassword(LockMode mode, String password, int[] indexs);
 
 
         /**
          * 修改密码，输入新密码
          */
-        public void onInputNewPassword();
+        void onInputNewPassword();
 
         /**
          * 两次输入密码不一致
          */
-        public void onEnteredPasswordsDiffer();
+        void onEnteredPasswordsDiffer();
 
+        /**
+         * 密码输入错误次数，已达到设置次数
+         */
+        void onErrorNumberMany();
 
     }
 
@@ -843,24 +869,25 @@ public class CustomLockView extends View {
         return saveLockKey;
     }
 
+    //设置保存密码的key
     public void setSaveLockKey(String saveLockKey) {
         this.saveLockKey = saveLockKey;
     }
 
-    public int getErrorTimes() {
-        return errorTimes;
+    public int getErrorNumber() {
+        return errorNumber;
     }
 
-    public void setErrorTimes(int errorTimes) {
-        this.errorTimes = errorTimes;
+    //设置允许最大输入错误次数
+    public void setErrorNumber(int errorNumber) {
+        this.errorNumber = errorNumber;
     }
 
-
-    //是否显示连接方向
     public boolean isShow() {
         return isShow;
     }
 
+    //是否显示连接方向
     public void setShow(boolean isShow) {
         this.isShow = isShow;
     }
@@ -890,5 +917,14 @@ public class CustomLockView extends View {
     //设置解锁模式
     public void setMode(LockMode mode) {
         this.mode = mode;
+    }
+
+    public boolean isSavePin() {
+        return isSavePin;
+    }
+
+    //设置密码后是否保存到本地
+    public void setSavePin(boolean savePin) {
+        isSavePin = savePin;
     }
 }
