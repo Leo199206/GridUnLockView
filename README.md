@@ -19,6 +19,7 @@
 * 设置密码后是否立即保存到本地:setSavePin(true);
 * 设置保存到本地的key值:setSaveLockKey(“passwordkey”)；
 * 设置模式:setMode(LockMode mode);
+
 #####LockMode
 * 设置密码:LockMode.SETTING_PASSWORD
 * 修改密码:LockMode.EDIT_PASSWORD
