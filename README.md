@@ -1,5 +1,6 @@
 # GestureLibray
 ###手势解锁库
+
 ####效果图：
 ![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-9/10239387.jpg)
 ####项目编译环境：Android studio
