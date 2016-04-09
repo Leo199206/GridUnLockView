@@ -24,7 +24,8 @@
 * 修改密码:LockMode.EDIT_PASSWORD
 * 验证密码:LockMode.VERIFY_PASSWORD
 * 清除密码:LockMode.CLEAR_PASSWORD
-###Gradle
+
+####Gradle
 Add this to your project's build.gradle file
 ```xml
 dependencies {
