@@ -1,7 +1,7 @@
 # GestureLibray
 ###手势解锁库
 ####效果图：
-![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-9/10239387.jpg  =480x840)
+<img src="http://7xkj5q.com1.z0.glb.clouddn.com/16-4-9/10239387.jpg" width = "480" height = "840" alt="图片名称" align=center />
 ####项目编译环境：Android studio
 ####密码说明:输入的密码添加了Base64加密
 ####属性说明
