@@ -1,10 +1,9 @@
 # GestureLibray
 ###手势解锁库
 ####效果图：
-* 设置与验证效果
-![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/65301365.jpg?imageMogr2/auto-orient/strip)
-* 修改与清除效果
-![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/73486952.jpg?imageMogr2/auto-orient/strip)
+![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/65301365.jpg  =300x)
+![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/73486952.jpg  =300x)
+
 ####项目编译环境：Android studio
 ####密码说明:输入的密码添加了Base64加密
 ####属性说明
