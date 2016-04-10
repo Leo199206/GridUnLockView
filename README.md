@@ -2,7 +2,7 @@
 ###手势解锁库
 ####效果图：
 ![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/55183879.jpg)
-![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/38630036.jpg)
+![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/87889841.jpg)
 ####项目编译环境：Android studio
 ####密码说明:输入的密码添加了Base64加密
 ####属性说明
