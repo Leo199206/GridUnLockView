@@ -36,6 +36,16 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     @Override
     public void initView() {
+        //显示绘制方向
+        lvLock.setShow(true);
+        //允许最大输入次数
+        lvLock.setErrorNumber(3);
+        //密码最少位数
+        lvLock.setPasswordMinLength(4);
+        //编辑密码或设置密码时，是否将密码保存到本地，配合setSaveLockKey使用
+        lvLock.setSavePin(true);
+        //保存密码Key
+        lvLock.setSaveLockKey(Contants.PASS_KEY);
     }
 
     /**
@@ -52,11 +62,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     @Override
     public void initData() {
-        lvLock.setShow(true);//显示绘制方向
-        lvLock.setErrorNumber(3);//允许最大输入次数
-        lvLock.setPasswordMinLength(4);//密码最少位数
-        lvLock.setSavePin(true);//编辑密码或设置密码时，是否将密码保存到本地，配合setSaveLockKey使用
-        lvLock.setSaveLockKey(Contants.PASS_KEY);//保存密码Key
+        //设置模式
         LockMode lockMode = (LockMode) getIntent().getSerializableExtra(Contants.INTENT_SECONDACTIVITY_KEY);
         setLockMode(lockMode);
     }
