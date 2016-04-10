@@ -1,8 +1,8 @@
 # GestureLibray
 ###手势解锁库
 ####效果图：
-![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/65301365.jpg)
-![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/73486952.jpg)
+![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/55183879.jpg)
+![](http://7xkj5q.com1.z0.glb.clouddn.com/16-4-10/38630036.jpg)
 
 ####项目编译环境：Android studio
 ####密码说明:输入的密码添加了Base64加密
