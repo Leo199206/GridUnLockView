@@ -795,9 +795,7 @@ public class CustomLockView extends View {
             if (isClearPasssword) {
                 ConfigUtil.getInstance(getContext()).remove(saveLockKey);
             }
-            mCompleteListener.onComplete(password, indexs);
         } else if (mode == LockMode.SETTING_PASSWORD) {//完成密码设置，存储到本地
-            mCompleteListener.onComplete(password, indexs);
             savePassWord(password);
         } else {
             isEditVerify = false;
