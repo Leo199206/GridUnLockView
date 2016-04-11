@@ -109,6 +109,8 @@ public class CustomLockView extends View {
     private int mOnStrokeWidth = 4;
     //编辑密码前是否验证
     private boolean isEditVerify = false;
+    //是否立即清除密码
+    private boolean isClearPasssword = true;
 
     //用于定时执行清除界面
     private Runnable run = new Runnable() {
@@ -790,7 +792,9 @@ public class CustomLockView extends View {
         if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
             savePassWord(password);
         } else if (mode == LockMode.CLEAR_PASSWORD) {//清除密码
-            ConfigUtil.getInstance(getContext()).remove(saveLockKey);
+            if (isClearPasssword) {
+                ConfigUtil.getInstance(getContext()).remove(saveLockKey);
+            }
             mCompleteListener.onComplete(password, indexs);
         } else if (mode == LockMode.SETTING_PASSWORD) {//完成密码设置，存储到本地
             mCompleteListener.onComplete(password, indexs);
@@ -926,5 +930,14 @@ public class CustomLockView extends View {
     //设置密码后是否保存到本地
     public void setSavePin(boolean savePin) {
         isSavePin = savePin;
+    }
+
+    public boolean isClearPasssword() {
+        return isClearPasssword;
+    }
+
+    //是否立即清除密码
+    public void setClearPasssword(boolean clearPasssword) {
+        isClearPasssword = clearPasssword;
     }
 }
