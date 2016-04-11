@@ -22,6 +22,7 @@
 * 设置密码后是否立即保存到本地:setSavePin(true);
 * 设置保存到本地的key值:setSaveLockKey(“passwordkey”)；
 * 设置模式:setMode(LockMode mode);
+* 设置LockMode.CLEAR_PASSWORD模式下是否清除本地密码数据:setClearPasssword(boolean clearPasssword);
 
 #####LockMode
 * 设置密码:LockMode.SETTING_PASSWORD
@@ -38,6 +39,6 @@ dependencies {
 
 }
 ```
-###Version：1.1.0
+###Version：1.1.1
 
 
