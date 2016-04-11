@@ -41,4 +41,10 @@ dependencies {
 ```
 ###Version：1.1.1
 
+#####更新说明：
+######Version：1.1.1
+* 增加setClearPasssword(boolean clearPasssword); 用于判断LockMode.CLEAR_PASSWORD模式下是否清除密码。
+* fix bug
+
+
 
