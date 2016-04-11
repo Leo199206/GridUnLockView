@@ -7,8 +7,8 @@ import android.widget.Toast;
 import com.andexert.library.RippleView;
 import com.leo.Contants;
 import com.leo.R;
-import com.leo.gesturelibray.enums.LockMode;
-import com.leo.gesturelibray.util.StringUtils;
+import com.leo.gesturelibrary.enums.LockMode;
+import com.leo.gesturelibrary.util.StringUtils;
 import com.leo.ui.base.BaseActivity;
 import com.leo.util.PasswordUtil;
 

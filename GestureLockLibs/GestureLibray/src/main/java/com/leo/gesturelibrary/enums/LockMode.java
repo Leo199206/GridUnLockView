@@ -1,4 +1,4 @@
-package com.leo.gesturelibray.enums;
+package com.leo.gesturelibrary.enums;
 
 /**
  * Created by leo on 16/3/28.

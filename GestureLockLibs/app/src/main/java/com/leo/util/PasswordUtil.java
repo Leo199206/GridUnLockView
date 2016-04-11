@@ -3,7 +3,7 @@ package com.leo.util;
 import android.content.Context;
 
 import com.leo.Contants;
-import com.leo.gesturelibray.util.ConfigUtil;
+import com.leo.gesturelibrary.util.ConfigUtil;
 
 /**
  * Created by leo on 16/4/5.

@@ -1,4 +1,4 @@
-package com.leo.gesturelibray.crypto;
+package com.leo.gesturelibrary.crypto;
 
 
 public final class Base64 {

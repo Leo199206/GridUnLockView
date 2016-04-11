@@ -1,4 +1,4 @@
-package com.leo.gesturelibray.view;
+package com.leo.gesturelibrary.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,14 +13,14 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.leo.gesturelibray.R;
-import com.leo.gesturelibray.crypto.Base64;
-import com.leo.gesturelibray.entity.Point;
-import com.leo.gesturelibray.enums.LockMode;
-import com.leo.gesturelibray.util.ConfigUtil;
-import com.leo.gesturelibray.util.LockUtil;
-import com.leo.gesturelibray.util.MathUtil;
-import com.leo.gesturelibray.util.StringUtils;
+import com.leo.gesturelibrary.R;
+import com.leo.gesturelibrary.crypto.Base64;
+import com.leo.gesturelibrary.entity.Point;
+import com.leo.gesturelibrary.enums.LockMode;
+import com.leo.gesturelibrary.util.ConfigUtil;
+import com.leo.gesturelibrary.util.LockUtil;
+import com.leo.gesturelibrary.util.MathUtil;
+import com.leo.gesturelibrary.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

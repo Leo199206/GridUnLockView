@@ -5,15 +5,15 @@ import android.widget.TextView;
 import com.andexert.library.RippleView;
 import com.leo.Contants;
 import com.leo.R;
-import com.leo.gesturelibray.enums.LockMode;
-import com.leo.gesturelibray.view.CustomLockView;
+import com.leo.gesturelibrary.enums.LockMode;
+import com.leo.gesturelibrary.view.CustomLockView;
 import com.leo.ui.base.BaseActivity;
 import com.leo.util.PasswordUtil;
 
 import butterknife.Bind;
 
-import static com.leo.gesturelibray.enums.LockMode.CLEAR_PASSWORD;
-import static com.leo.gesturelibray.enums.LockMode.SETTING_PASSWORD;
+import static com.leo.gesturelibrary.enums.LockMode.CLEAR_PASSWORD;
+import static com.leo.gesturelibrary.enums.LockMode.SETTING_PASSWORD;
 
 public class SecondActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
     @Bind(R.id.rv_back)

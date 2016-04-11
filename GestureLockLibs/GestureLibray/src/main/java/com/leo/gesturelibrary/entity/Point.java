@@ -1,4 +1,4 @@
-package com.leo.gesturelibray.entity;
+package com.leo.gesturelibrary.entity;
 
 /**
  * 点位置

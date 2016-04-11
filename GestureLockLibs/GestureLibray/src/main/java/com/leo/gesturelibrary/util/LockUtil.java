@@ -1,7 +1,7 @@
-package com.leo.gesturelibray.util;
+package com.leo.gesturelibrary.util;
 
 
-import com.leo.gesturelibray.entity.Point;
+import com.leo.gesturelibrary.entity.Point;
 
 /**
  * 手势密码工具类
