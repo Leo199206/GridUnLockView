@@ -10,7 +10,6 @@ import android.graphics.Path;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,9 +21,7 @@ import com.leo.gesturelibrary.util.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Logger;
 
 
 /**
@@ -53,8 +50,6 @@ public class CustomLockView extends View {
     private boolean checking = false;
     //刷新
     private TimerTask task = null;
-    //计时器
-    private Timer timer = new Timer();
     //监听
     private OnLockViewListener mCompleteListener;
     //错误限制 默认为4次
@@ -470,7 +465,6 @@ public class CustomLockView extends View {
         }
         if (this.sPoints.size() < passwordMinLength
                 && this.sPoints.size() > 0) {
-            // clearPassword(CLEAR_TIME);
             error();
             if (mCompleteListener != null) {
                 mCompleteListener.onPasswordIsShort(mode, passwordMinLength);  //密码太短
@@ -597,6 +591,7 @@ public class CustomLockView extends View {
         showTimes = 0;
         errorNumber = 4;
         isCorrect = true;
+        oldPassword = "";
         reset();
         postInvalidate();
     }
@@ -669,29 +664,6 @@ public class CustomLockView extends View {
         canvas.drawPath(mArrowPath, mPaint);
     }
 
-
-    /**
-     * 清除密码
-     */
-    @Deprecated
-    private void clearPassword(final long time) {
-        if (time > 1) {
-            if (task != null) {
-                task.cancel();
-            }
-            postInvalidate();
-            task = new TimerTask() {
-                public void run() {
-                    reset();
-                    postInvalidate();
-                }
-            };
-            timer.schedule(task, time);
-        } else {
-            reset();
-            postInvalidate();
-        }
-    }
 
     /**
      * 设置已经选中的为错误
@@ -782,7 +754,7 @@ public class CustomLockView extends View {
         if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
             savePassWord(password, indexs);
         } else if (mode == LockMode.CLEAR_PASSWORD) {//清除密码
-            if (isClearPasssword && mCompleteListener != null) {
+            if (mCompleteListener != null) {
                 mCompleteListener.clearPassword(mode, password, indexs);
             }
         } else if (mode == LockMode.SETTING_PASSWORD) {//完成密码设置，存储到本地

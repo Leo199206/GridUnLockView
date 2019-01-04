@@ -1,5 +1,6 @@
 package com.leo.ui.activity;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -101,6 +102,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
 
         @Override
         public void clearPassword(LockMode mode, String password, int[] indexs) {
+            Log.e("clearPassword:mode:", mode.toString());
             ConfigUtil.remove(Contants.PASS_KEY);
         }
 
