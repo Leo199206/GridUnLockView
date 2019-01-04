@@ -8,34 +8,29 @@ import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Path;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.leo.gesturelibrary.R;
-import com.leo.gesturelibrary.crypto.Base64;
 import com.leo.gesturelibrary.entity.Point;
 import com.leo.gesturelibrary.enums.LockMode;
-import com.leo.gesturelibrary.util.ConfigUtil;
 import com.leo.gesturelibrary.util.LockUtil;
 import com.leo.gesturelibrary.util.MathUtil;
-import com.leo.gesturelibrary.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 
 /**
  * 手势解锁
  */
 public class CustomLockView extends View {
-    //保存密码key
-    private String saveLockKey = "saveLockKey";
-    //是否保存保存PIN
-    private boolean isSavePin = false;
     //控件宽度
     private float width = 0;
     //控件高度
@@ -61,9 +56,7 @@ public class CustomLockView extends View {
     //计时器
     private Timer timer = new Timer();
     //监听
-    private OnCompleteListener mCompleteListener;
-    //清除痕迹的时间
-    private long CLEAR_TIME = 100;
+    private OnLockViewListener mCompleteListener;
     //错误限制 默认为4次
     private int errorNumber = 4;
     //记录上一次滑动的密码
@@ -480,7 +473,7 @@ public class CustomLockView extends View {
             // clearPassword(CLEAR_TIME);
             error();
             if (mCompleteListener != null) {
-                mCompleteListener.onPasswordIsShort(passwordMinLength);  //密码太短
+                mCompleteListener.onPasswordIsShort(mode, passwordMinLength);  //密码太短
             }
             return;
         }
@@ -490,9 +483,9 @@ public class CustomLockView extends View {
                 indexs[i] = sPoints.get(i).index;
             }
             if (mode == LockMode.SETTING_PASSWORD || isEditVerify) {
-                invalidSettingPass(Base64.encryptionString(indexs), indexs);
+                invalidSettingPass(arrayToString(indexs), indexs);
             } else {
-                onVerifyPassword(Base64.encryptionString(indexs), indexs);
+                onVerifyPassword(arrayToString(indexs), indexs);
             }
         }
     }
@@ -730,22 +723,19 @@ public class CustomLockView extends View {
     /**
      * 验证本地密码与当前滑动密码是否相同
      *
-     * @param indexs
+     * @param index
+     * @param password
      */
-    private void onVerifyPassword(String password, int[] indexs) {
-        if (oldPassword != null && oldPassword.length() == password.length()) {
-            if (!StringUtils.isEquals(oldPassword, password)) {
-                isCorrect = false;
-            } else {
-                isCorrect = true;
-            }
+    private void onVerifyPassword(String password, int[] index) {
+        if (TextUtils.equals(oldPassword, password)) {
+            isCorrect = true;
         } else {
             isCorrect = false;
         }
         if (!isCorrect) {
             drawPassWordError();
         } else {
-            drawPassWordRight(password, indexs);
+            drawPassWordRight(password, index);
         }
     }
 
@@ -757,15 +747,15 @@ public class CustomLockView extends View {
             return;
         }
         if (mode == LockMode.SETTING_PASSWORD) {
-            mCompleteListener.onEnteredPasswordsDiffer();
+            mCompleteListener.onEnteredPasswordsDiffer(mode);
         } else if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
-            mCompleteListener.onEnteredPasswordsDiffer();
+            mCompleteListener.onEnteredPasswordsDiffer(mode);
         } else {
             errorNumber--;
             if (errorNumber <= 0) {
                 mCompleteListener.onErrorNumberMany();
             } else {
-                mCompleteListener.onError(errorNumber + "");
+                mCompleteListener.onError(mode, errorNumber + "");
             }
         }
         error();
@@ -784,23 +774,23 @@ public class CustomLockView extends View {
             return;
         }
         if (mode == LockMode.EDIT_PASSWORD && !isEditVerify) {//修改密码，旧密码正确，进行新密码设置
-            mCompleteListener.onInputNewPassword();
+            mCompleteListener.onInputNewPassword(mode);
             isEditVerify = true;
             showTimes = 0;
             return;
         }
         if (mode == LockMode.EDIT_PASSWORD && isEditVerify) {
-            savePassWord(password);
+            savePassWord(password, indexs);
         } else if (mode == LockMode.CLEAR_PASSWORD) {//清除密码
-            if (isClearPasssword) {
-                ConfigUtil.getInstance(getContext()).remove(saveLockKey);
+            if (isClearPasssword && mCompleteListener != null) {
+                mCompleteListener.clearPassword(mode, password, indexs);
             }
         } else if (mode == LockMode.SETTING_PASSWORD) {//完成密码设置，存储到本地
-            savePassWord(password);
+            savePassWord(password, indexs);
         } else {
             isEditVerify = false;
         }
-        mCompleteListener.onComplete(password, indexs);
+        mCompleteListener.onComplete(mode, password, indexs);
     }
 
     /**
@@ -808,9 +798,9 @@ public class CustomLockView extends View {
      *
      * @param password
      */
-    private void savePassWord(String password) {
-        if (isSavePin) {
-            ConfigUtil.getInstance(getContext()).putString(saveLockKey, password);
+    private void savePassWord(String password, int[] indexs) {
+        if (mCompleteListener != null) {
+            mCompleteListener.savePassword(mode, password, indexs);
         }
     }
 
@@ -820,28 +810,52 @@ public class CustomLockView extends View {
      *
      * @param mCompleteListener
      */
-    public void setOnCompleteListener(OnCompleteListener mCompleteListener) {
+    public void setOnCompleteListener(OnLockViewListener mCompleteListener) {
         this.mCompleteListener = mCompleteListener;
+    }
+
+
+    /**
+     * array to String
+     *
+     * @param array
+     */
+    public String arrayToString(int[] array) {
+        String a = "";
+        for (int i : array) {
+            a += i;
+        }
+        return a;
     }
 
     /**
      * 轨迹球画完监听事件
      */
-    public interface OnCompleteListener {
+    public interface OnLockViewListener {
         /**
          * 画完了
          */
-        void onComplete(String password, int[] indexs);
+        void onComplete(LockMode mode, String password, int[] indexs);
+
+        /**
+         * 验证正确，执行清除密码回调
+         */
+        void clearPassword(LockMode mode, String password, int[] indexs);
+
+        /**
+         * 验证完成，保存密码
+         */
+        void savePassword(LockMode mode, String password, int[] indexs);
 
         /**
          * 绘制错误
          */
-        void onError(String errorTimes);
+        void onError(LockMode mode, String errorTimes);
 
         /**
          * 密码太短
          */
-        void onPasswordIsShort(int passwordMinLength);
+        void onPasswordIsShort(LockMode mode, int passwordMinLength);
 
 
         /**
@@ -853,27 +867,18 @@ public class CustomLockView extends View {
         /**
          * 修改密码，输入新密码
          */
-        void onInputNewPassword();
+        void onInputNewPassword(LockMode mode);
 
         /**
          * 两次输入密码不一致
          */
-        void onEnteredPasswordsDiffer();
+        void onEnteredPasswordsDiffer(LockMode mode);
 
         /**
          * 密码输入错误次数，已达到设置次数
          */
         void onErrorNumberMany();
 
-    }
-
-    public String getSaveLockKey() {
-        return saveLockKey;
-    }
-
-    //设置保存密码的key
-    public void setSaveLockKey(String saveLockKey) {
-        this.saveLockKey = saveLockKey;
     }
 
     public int getErrorNumber() {
@@ -919,15 +924,6 @@ public class CustomLockView extends View {
     //设置解锁模式
     public void setMode(LockMode mode) {
         this.mode = mode;
-    }
-
-    public boolean isSavePin() {
-        return isSavePin;
-    }
-
-    //设置密码后是否保存到本地
-    public void setSavePin(boolean savePin) {
-        isSavePin = savePin;
     }
 
     public boolean isClearPasssword() {

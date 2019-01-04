@@ -1,5 +1,6 @@
 package com.leo.ui.activity;
 
+import android.view.View;
 import android.widget.TextView;
 
 import com.andexert.library.RippleView;
@@ -8,6 +9,7 @@ import com.leo.R;
 import com.leo.gesturelibrary.enums.LockMode;
 import com.leo.gesturelibrary.view.CustomLockView;
 import com.leo.ui.base.BaseActivity;
+import com.leo.util.ConfigUtil;
 import com.leo.util.PasswordUtil;
 
 import butterknife.Bind;
@@ -16,8 +18,8 @@ import static com.leo.gesturelibrary.enums.LockMode.CLEAR_PASSWORD;
 import static com.leo.gesturelibrary.enums.LockMode.SETTING_PASSWORD;
 
 public class SecondActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
-    @Bind(R.id.rv_back)
-    RippleView rvBack;
+    @Bind(R.id.tv_back)
+    TextView tvBack;
     @Bind(R.id.tv_text)
     TextView tvText;
     @Bind(R.id.lv_lock)
@@ -42,10 +44,6 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
         lvLock.setErrorNumber(3);
         //密码最少位数
         lvLock.setPasswordMinLength(4);
-        //编辑密码或设置密码时，是否将密码保存到本地，配合setSaveLockKey使用
-        lvLock.setSavePin(true);
-        //保存密码Key
-        lvLock.setSaveLockKey(Contants.PASS_KEY);
     }
 
     /**
@@ -54,7 +52,12 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
     @Override
     public void initListener() {
         lvLock.setOnCompleteListener(onCompleteListener);
-        rvBack.setOnRippleCompleteListener(this);
+        tvBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     /**
@@ -88,20 +91,31 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
     /**
      * 密码输入监听
      */
-    CustomLockView.OnCompleteListener onCompleteListener = new CustomLockView.OnCompleteListener() {
+    CustomLockView.OnLockViewListener onCompleteListener = new CustomLockView.OnLockViewListener() {
+
         @Override
-        public void onComplete(String password, int[] indexs) {
+        public void onComplete(LockMode mode, String password, int[] indexs) {
             tvHint.setText(getPassWordHint());
             finish();
         }
 
         @Override
-        public void onError(String errorTimes) {
-            tvHint.setText("密码错误，还可以输入" + errorTimes + "次");
+        public void clearPassword(LockMode mode, String password, int[] indexs) {
+            ConfigUtil.remove(Contants.PASS_KEY);
         }
 
         @Override
-        public void onPasswordIsShort(int passwordMinLength) {
+        public void savePassword(LockMode mode, String password, int[] indexs) {
+            ConfigUtil.putString(Contants.PASS_KEY, password);
+        }
+
+        @Override
+        public void onError(LockMode mode, String errorCount) {
+            tvHint.setText("密码错误，还可以输入" + errorCount + "次");
+        }
+
+        @Override
+        public void onPasswordIsShort(LockMode mode, int passwordMinLength) {
             tvHint.setText("密码不能少于" + passwordMinLength + "个点");
         }
 
@@ -110,16 +124,16 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
             tvHint.setText("请再次输入密码");
         }
 
-
         @Override
-        public void onInputNewPassword() {
+        public void onInputNewPassword(LockMode mode) {
             tvHint.setText("请输入新密码");
         }
 
         @Override
-        public void onEnteredPasswordsDiffer() {
+        public void onEnteredPasswordsDiffer(LockMode mode) {
             tvHint.setText("两次输入的密码不一致");
         }
+
 
         @Override
         public void onErrorNumberMany() {
@@ -159,11 +173,11 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
         switch (mode) {
             case CLEAR_PASSWORD:
                 str = "清除密码";
-                setLockMode(CLEAR_PASSWORD, PasswordUtil.getPin(this), str);
+                setLockMode(CLEAR_PASSWORD, PasswordUtil.getPin(), str);
                 break;
             case EDIT_PASSWORD:
                 str = "修改密码";
-                setLockMode(LockMode.EDIT_PASSWORD, PasswordUtil.getPin(this), str);
+                setLockMode(LockMode.EDIT_PASSWORD, PasswordUtil.getPin(), str);
                 break;
             case SETTING_PASSWORD:
                 str = "设置密码";
@@ -171,7 +185,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
                 break;
             case VERIFY_PASSWORD:
                 str = "验证密码";
-                setLockMode(LockMode.VERIFY_PASSWORD, PasswordUtil.getPin(this), str);
+                setLockMode(LockMode.VERIFY_PASSWORD, PasswordUtil.getPin(), str);
                 break;
         }
         tvText.setText(str);

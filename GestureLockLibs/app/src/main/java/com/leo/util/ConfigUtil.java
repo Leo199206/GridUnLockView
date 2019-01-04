@@ -1,4 +1,4 @@
-package com.leo.gesturelibrary.util;
+package com.leo.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,23 +9,11 @@ import android.preference.PreferenceManager;
  */
 public class ConfigUtil {
     private static SharedPreferences sharedPreferences;
-    private static ConfigUtil configUtil;
     private static Context context;
 
-    public static Context getContext() {
-        return context;
-    }
 
-    public static void setContext(Context context) {
-        ConfigUtil.context = context;
-    }
-
-    public static ConfigUtil getInstance(Context context) {
-        if (configUtil==null){
-            configUtil=new ConfigUtil();
-        }
-        configUtil.setContext(context);
-        return configUtil;
+    public static void init(Context c) {
+        context = c;
     }
 
     public static SharedPreferences getSharedPreferences() {
