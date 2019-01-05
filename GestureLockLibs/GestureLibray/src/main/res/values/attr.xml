@@ -30,7 +30,6 @@
         <attr name="inner_ring_background_width" format="dimension" />
         //连接线宽度
         <attr name="connecting_line_width" format="dimension" />
-        connectingLineErrorColor
         //解锁连接线，是否绘制在圆圈上层
         <attr name="is_line_in_the_round" format="boolean" />
     </declare-styleable>
