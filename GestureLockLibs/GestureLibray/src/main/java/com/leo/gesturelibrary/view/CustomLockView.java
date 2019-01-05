@@ -61,7 +61,7 @@ public class CustomLockView extends View {
     //当前密码是否正确 默认为正确
     private boolean isCorrect = true;
     //是否显示滑动方向 默认为显示
-    private boolean isShow = true;
+    private boolean isShowArrow = true;
     //验证或者设置 0:设置 1:验证
     private LockMode mode = LockMode.SETTING_PASSWORD;
     //用于执行清除界面
@@ -74,6 +74,17 @@ public class CustomLockView extends View {
     private int mColorOnRing = 0xFF378FC9;
     //松开手时的颜色
     private int mColorErrorRing = 0xFF378FC9;
+    //正常连接线颜色
+    private int mConnectingLineColor = mColorOnRing;
+
+    //发生错误时连接线颜色
+    private int mConnectingLineErrorColor;
+    //按下时内圆颜色
+    private int mInnerRingColor;
+    private int mInnerRingBackgroundColor;
+    private int mInnerRingErrorColor;
+    private int mInnerRingBackgroundErrorColor;
+
 
     //外圈大小
     private float mOuterRingWidth = 120;
@@ -86,19 +97,21 @@ public class CustomLockView extends View {
     //小圆半径
     private float mInnerRingRadius;
     //小圆半透明背景半径
-    private float mInnerBackgroudRadius;
+    private float mInnerBackgroundRadius;
     //内圆背景大小（半透明内圆）
-    private float mInnerBackgroudWidth;
+    private float mInnerBackgroundWidth;
     //三角形边长
     private float mArrowLength;
     //未按下时圆圈的边宽
     private int mNoFingerStrokeWidth = 2;
+    //连接线宽度
+    private int mConnectingLineWidth = 2;
     //按下时圆圈的边宽
     private int mOnStrokeWidth = 4;
     //编辑密码前是否验证
     private boolean isEditVerify = false;
-    //是否立即清除密码
-    private boolean isClearPasssword = true;
+    //是否将连接线绘制在圆的上层
+    private boolean isLineInTheRound = false;
 
     //用于定时执行清除界面
     private Runnable run = new Runnable() {
@@ -118,23 +131,20 @@ public class CustomLockView extends View {
         super(context, attrs, defStyleAttr);
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.GestureLock_styleable, defStyleAttr, 0);
-        int n = a.getIndexCount();
-        for (int i = 0; i < n; i++) {
-            int attr = a.getIndex(i);
-            if (attr == R.styleable.GestureLock_styleable_color_on_ring) {
-                mColorOnRing = a.getColor(attr, mColorOnRing);
-            } else if (attr == R.styleable.GestureLock_styleable_color_up_ring) {
-                mColorUpRing = a.getColor(attr, mColorUpRing);
-            } else if (attr == R.styleable.GestureLock_styleable_color_error_ring) {
-                mColorErrorRing = a.getColor(attr, mColorErrorRing);
-            } else if (attr == R.styleable.GestureLock_styleable_inner_ring_width) {
-                mInnerRingWidth = a.getDimensionPixelSize(attr, 0);
-            } else if (attr == R.styleable.GestureLock_styleable_outer_ring_spacing_width) {
-                mCircleSpacing = a.getDimensionPixelSize(attr, 0);
-            } else if (attr == R.styleable.GestureLock_styleable_inner_background_width) {
-                mInnerBackgroudWidth = a.getDimensionPixelSize(attr, 0);
-            }
-        }
+        mColorOnRing = a.getColor(R.styleable.GestureLock_styleable_color_on_ring, mColorOnRing);
+        mColorUpRing = a.getColor(R.styleable.GestureLock_styleable_color_up_ring, mColorUpRing);
+        mColorErrorRing = a.getColor(R.styleable.GestureLock_styleable_color_error_ring, mColorErrorRing);
+        mInnerRingWidth = a.getDimensionPixelOffset(R.styleable.GestureLock_styleable_inner_ring_width, 0);
+        mCircleSpacing = a.getDimensionPixelOffset(R.styleable.GestureLock_styleable_outer_ring_spacing_width, 0);
+        mInnerBackgroundWidth = a.getDimensionPixelOffset(R.styleable.GestureLock_styleable_inner_ring_background_width, 0);
+        isLineInTheRound = a.getBoolean(R.styleable.GestureLock_styleable_is_line_in_the_round, false);
+        mConnectingLineWidth = a.getDimensionPixelOffset(R.styleable.GestureLock_styleable_connecting_line_width, 2);
+        mConnectingLineColor = a.getColor(R.styleable.GestureLock_styleable_connecting_line_color, mColorOnRing);
+        mConnectingLineErrorColor = a.getColor(R.styleable.GestureLock_styleable_connecting_line_error_color, mColorErrorRing);
+        mInnerRingColor = a.getColor(R.styleable.GestureLock_styleable_inner_ring_color, mColorOnRing);
+        mInnerRingBackgroundColor = a.getColor(R.styleable.GestureLock_styleable_inner_ring_background_color, mColorOnRing);
+        mInnerRingErrorColor = a.getColor(R.styleable.GestureLock_styleable_inner_ring_error_color, mColorErrorRing);
+        mInnerRingBackgroundErrorColor = a.getColor(R.styleable.GestureLock_styleable_inner_ring_background_error_color, mColorErrorRing);
         a.recycle();
     }
 
@@ -202,10 +212,10 @@ public class CustomLockView extends View {
         if (mInnerRingWidth == 0 || mInnerRingWidth >= mOuterRingWidth) {
             mInnerRingWidth = mOuterRingWidth / 3;
         }
-        if (mInnerBackgroudWidth == 0 || mInnerBackgroudWidth >= mOuterRingWidth) {
-            mInnerBackgroudWidth = mInnerRingWidth * 1.3f;
+        if (mInnerBackgroundWidth == 0 || mInnerBackgroundWidth >= mOuterRingWidth) {
+            mInnerBackgroundWidth = mInnerRingWidth * 1.3f;
         }
-        mInnerBackgroudRadius = mInnerBackgroudWidth / 2;
+        mInnerBackgroundRadius = mInnerBackgroundWidth / 2;
         mRadius = mOuterRingWidth / 2;
         mInnerRingRadius = mInnerRingWidth / 2;
         mArrowLength = mRadius * 0.25f;//三角形的边长
@@ -246,12 +256,23 @@ public class CustomLockView extends View {
         canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(true);
-        // 画连线
-        drawAllLine(canvas);
-        // 画所有点
-        drawAllPoint(canvas);
+        if (isLineInTheRound) {
+            // 画外圈
+            drawAllOuterRing(canvas);
+            // 画连线
+            drawAllLine(canvas);
+            // 画内圈
+            drawAllInnerRing(canvas);
+        } else {
+            // 画连线
+            drawAllLine(canvas);
+            // 画外圈
+            drawAllOuterRing(canvas);
+            // 画所有点
+            drawAllInnerRing(canvas);
+        }
         // 是否绘制方向图标
-        if (isShow) {
+        if (isShowArrow) {
             drawDirectionArrow(canvas);
         }
     }
@@ -287,15 +308,38 @@ public class CustomLockView extends View {
      *
      * @param canvas
      */
-    private void drawAllPoint(Canvas canvas) {
+    private void drawAllInnerRing(Canvas canvas) {
         for (int i = 0; i < mPoints.length; i++) {
             for (int j = 0; j < mPoints[i].length; j++) {
                 Point p = mPoints[i][j];
                 if (p != null) {
                     if (p.state == Point.STATE_CHECK) {
-                        onDrawOn(canvas, p);
+                        onDrawInnerRing(canvas, p);
                     } else if (p.state == Point.STATE_CHECK_ERROR) {
-                        onDrawError(canvas, p);
+                        onDrawErrorInnerRing(canvas, p);
+                    } else {
+                        onDrawNoFinger(canvas, p);
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 绘制解锁图案所有的点
+     *
+     * @param canvas
+     */
+    private void drawAllOuterRing(Canvas canvas) {
+        for (int i = 0; i < mPoints.length; i++) {
+            for (int j = 0; j < mPoints[i].length; j++) {
+                Point p = mPoints[i][j];
+                if (p != null) {
+                    if (p.state == Point.STATE_CHECK) {
+                        onDrawOuterRing(canvas, p);
+                    } else if (p.state == Point.STATE_CHECK_ERROR) {
+                        onDrawErrorOuterRing(canvas, p);
                     } else {
                         onDrawNoFinger(canvas, p);
                     }
@@ -330,11 +374,12 @@ public class CustomLockView extends View {
 
 
     /**
-     * 绘制按下时状态
+     * 绘制正常状态外圈
      *
-     * @param canvas
+     * @PARAM CANVAS
+     * @PARAM P
      */
-    private void onDrawOn(Canvas canvas, Point p) {
+    private void onDrawOuterRing(Canvas canvas, Point p) {
         // 绘制背景
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
@@ -344,21 +389,15 @@ public class CustomLockView extends View {
         mPaint.setColor(mColorOnRing);
         mPaint.setStrokeWidth(mOnStrokeWidth);
         canvas.drawCircle(p.x, p.y, mRadius, mPaint);
-        // 绘制内圆背景
-        onDrawInnerCircleBackground(canvas, p, mColorOnRing);
-        // 绘制内圆
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(mColorOnRing);
-        canvas.drawCircle(p.x, p.y, mInnerRingRadius, mPaint);
     }
 
-
     /**
-     * 绘制松开手时状态
+     * 绘制错误状态外圈
      *
-     * @param canvas
+     * @PARAM CANVAS
+     * @PARAM P
      */
-    private void onDrawError(Canvas canvas, Point p) {
+    private void onDrawErrorOuterRing(Canvas canvas, Point p) {
         // 绘制背景
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
@@ -368,11 +407,35 @@ public class CustomLockView extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mOnStrokeWidth);
         canvas.drawCircle(p.x, p.y, mRadius, mPaint);
+    }
+
+
+    /**
+     * 绘制按下时内圈
+     *
+     * @param canvas
+     */
+    private void onDrawInnerRing(Canvas canvas, Point p) {
         // 绘制内圆背景
-        onDrawInnerCircleBackground(canvas, p, mColorErrorRing);
+        onDrawInnerCircleBackground(canvas, p, mInnerRingBackgroundColor);
         // 绘制内圆
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(mColorErrorRing);
+        mPaint.setColor(mInnerRingColor);
+        canvas.drawCircle(p.x, p.y, mInnerRingRadius, mPaint);
+    }
+
+    /**
+     * 绘制错误状态内圈
+     *
+     * @PARAM CANVAS
+     * @PARAM P
+     */
+    private void onDrawErrorInnerRing(Canvas canvas, Point p) {
+        // 绘制内圆背景
+        onDrawInnerCircleBackground(canvas, p, mInnerRingBackgroundErrorColor);
+        // 绘制内圆
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(mInnerRingErrorColor);
         canvas.drawCircle(p.x, p.y, mInnerRingRadius, mPaint);
     }
 
@@ -399,8 +462,7 @@ public class CustomLockView extends View {
         // 绘制内圆
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(color);
-        mPaint.setAlpha(100);
-        canvas.drawCircle(p.x, p.y, mInnerBackgroudRadius, mPaint);
+        canvas.drawCircle(p.x, p.y, mInnerBackgroundRadius, mPaint);
     }
 
 
@@ -577,7 +639,7 @@ public class CustomLockView extends View {
     /**
      * 重置点状态
      */
-    public void reset() {
+    private void reset() {
         for (Point p : sPoints) {
             p.state = Point.STATE_NORMAL;
         }
@@ -587,7 +649,7 @@ public class CustomLockView extends View {
     /**
      * 清空当前信息
      */
-    public void clearCurrent() {
+    public void clearCurrentState() {
         showTimes = 0;
         errorNumber = 4;
         isCorrect = true;
@@ -604,8 +666,10 @@ public class CustomLockView extends View {
      * @param b
      */
     private void drawLine(Canvas canvas, Point a, Point b) {
-        mPaint.setColor(mColorOnRing);
-        mPaint.setStrokeWidth(3);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setColor(mConnectingLineColor);
+        mPaint.setStrokeWidth(mConnectingLineWidth);
         canvas.drawLine(a.x, a.y, b.x, b.y, mPaint);
     }
 
@@ -617,8 +681,10 @@ public class CustomLockView extends View {
      * @param b
      */
     private void drawErrorLine(Canvas canvas, Point a, Point b) {
-        mPaint.setColor(mColorErrorRing);
-        mPaint.setStrokeWidth(3);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setColor(mConnectingLineErrorColor);
+        mPaint.setStrokeWidth(mConnectingLineWidth);
         canvas.drawLine(a.x, a.y, b.x, b.y, mPaint);
     }
 
@@ -651,7 +717,7 @@ public class CustomLockView extends View {
     private void drawArrow(Canvas canvas, Point a, int color) {
         // 绘制三角形，初始时是个默认箭头朝上的一个等腰三角形，用户绘制结束后，根据由两个GestureLockView决定需要旋转多少度
         Path mArrowPath = new Path();
-        float offset = mInnerBackgroudRadius + (mArrowLength + mRadius - mInnerBackgroudRadius) / 2;//偏移量,定位三角形位置
+        float offset = mInnerBackgroundRadius + (mArrowLength + mRadius - mInnerBackgroundRadius) / 2;//偏移量,定位三角形位置
         mArrowPath.moveTo(a.x, a.y - offset);
         mArrowPath.lineTo(a.x - mArrowLength, a.y - offset
                 + mArrowLength);
@@ -853,57 +919,84 @@ public class CustomLockView extends View {
 
     }
 
-    public int getErrorNumber() {
-        return errorNumber;
+
+    /**
+     * 设置允许最大输入错误次数
+     *
+     * @param errorCount
+     */
+    public void setInputPasswordMaxCount(int errorCount) {
+        this.errorNumber = errorCount;
     }
 
-    //设置允许最大输入错误次数
-    public void setErrorNumber(int errorNumber) {
-        this.errorNumber = errorNumber;
+
+    /**
+     * 是否显示连接方向三角形
+     *
+     * @param isShowArrow
+     */
+    public void setShowArrow(boolean isShowArrow) {
+        this.isShowArrow = isShowArrow;
     }
 
-    public boolean isShow() {
-        return isShow;
-    }
-
-    //是否显示连接方向
-    public void setShow(boolean isShow) {
-        this.isShow = isShow;
-    }
-
+    /**
+     * 获取已经设置过的密码
+     */
     public String getOldPassword() {
         return oldPassword;
     }
 
-    //设置已经设置过的密码，验证密码时需要用到
+    /**
+     * 设置旧密码
+     *
+     * @param oldPassword
+     */
     public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
     }
 
+    /**
+     * 最小输入密码位数
+     */
     public int getPasswordMinLength() {
         return passwordMinLength;
     }
 
-    //设置密码最少输入长度
-    public void setPasswordMinLength(int passwordMinLength) {
+
+    /**
+     * 设置密码最少输入长度
+     *
+     * @param passwordMinLength
+     */
+    public void setInputPasswordMinLength(int passwordMinLength) {
         this.passwordMinLength = passwordMinLength;
     }
 
+    /**
+     * 九宫格解锁模式
+     */
     public LockMode getMode() {
         return mode;
     }
 
-    //设置解锁模式
+
+    /**
+     * 设置解锁模式
+     *
+     * @param mode
+     */
     public void setMode(LockMode mode) {
         this.mode = mode;
     }
 
-    public boolean isClearPasssword() {
-        return isClearPasssword;
+    /**
+     * 是否将连接线绘制在圆圈上面
+     *
+     * @param lineInTheRound
+     */
+    public CustomLockView setLineInTheRound(boolean lineInTheRound) {
+        isLineInTheRound = lineInTheRound;
+        return this;
     }
 
-    //是否立即清除密码
-    public void setClearPasssword(boolean clearPasssword) {
-        isClearPasssword = clearPasssword;
-    }
 }

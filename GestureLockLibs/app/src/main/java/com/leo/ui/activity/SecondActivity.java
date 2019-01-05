@@ -1,6 +1,5 @@
 package com.leo.ui.activity;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,11 +39,12 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
     @Override
     public void initView() {
         //显示绘制方向
-        lvLock.setShow(true);
+        lvLock.setShowArrow(false);
+        lvLock.setLineInTheRound(true);
         //允许最大输入次数
-        lvLock.setErrorNumber(3);
+        lvLock.setInputPasswordMaxCount(3);
         //密码最少位数
-        lvLock.setPasswordMinLength(4);
+        lvLock.setInputPasswordMinLength(4);
     }
 
     /**
@@ -77,8 +77,7 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
      */
     private void setLockMode(LockMode mode, String password, String msg) {
         lvLock.setMode(mode);
-        lvLock.setErrorNumber(3);
-        lvLock.setClearPasssword(false);
+        lvLock.setInputPasswordMaxCount(3);
         if (mode != SETTING_PASSWORD) {
             tvHint.setText("请输入已经设置过的密码");
             lvLock.setOldPassword(password);
@@ -102,7 +101,6 @@ public class SecondActivity extends BaseActivity implements RippleView.OnRippleC
 
         @Override
         public void clearPassword(LockMode mode, String password, int[] indexs) {
-            Log.e("clearPassword:mode:", mode.toString());
             ConfigUtil.remove(Contants.PASS_KEY);
         }
 
