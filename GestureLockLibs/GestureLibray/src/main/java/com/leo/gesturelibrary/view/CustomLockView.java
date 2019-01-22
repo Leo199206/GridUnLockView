@@ -651,9 +651,9 @@ public class CustomLockView extends View {
      */
     public void clearCurrentState() {
         showTimes = 0;
-        errorNumber = 4;
         isCorrect = true;
         oldPassword = "";
+        isEditVerify = false;
         reset();
         postInvalidate();
     }
