@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/GestureLibrays.iml" filepath="$PROJECT_DIR$/.idea/GestureLibrays.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/GestureLibrary.iml" filepath="$PROJECT_DIR$/.idea/GestureLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GestureLibrary/GestureLibrary.GestureLibrary.iml" filepath="$PROJECT_DIR$/.idea/modules/GestureLibrary/GestureLibrary.GestureLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/GestureLibrary.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/GestureLibrary.app.iml" />
     </modules>
   </component>
 </project>

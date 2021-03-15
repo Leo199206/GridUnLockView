@@ -40,12 +40,9 @@
 
 #### Gradle
 Add this to your project's build.gradle file
-```xml
-dependencies {
 
-   compile 'com.leo.gesturelibray:GestureLibray:1.1.4'
-
-}
+```
+implementation 'com.github.Leo199206:GestureLibrary:1.1.4'
 ```
 ### Version：1.1.1
 
