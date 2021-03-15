@@ -1,4 +1,4 @@
-# GestureLibray
+# GestureLibrary
 ### 手势解锁库
 
 #### 项目编译环境：Android studio
