@@ -1,0 +1,49 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.github.dcendents.android-maven'
+
+
+group = 'com.github.Leo199206'
+version = "1.1.4"
+android {
+    resourcePrefix "androidTool"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    androidExtensions {
+        experimental = true
+    }
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 29
+        versionCode 1
+        versionName version
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    sourceSets {
+        debug.setRoot('src/debug')
+        release.setRoot('src/release')
+        main {
+            //配置java和kotlin源码目录
+            java.srcDirs = ['src/main/kotlin', 'src/main/java']
+            //指定jniLibs文件存放目录（.so文件）
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.1.0'
+}
