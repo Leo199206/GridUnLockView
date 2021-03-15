@@ -2,7 +2,9 @@ package com.leo.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 
 /**
  * Created by leo on 16/2/1.
@@ -18,7 +20,7 @@ public class ConfigUtil {
 
     public static SharedPreferences getSharedPreferences() {
         if (sharedPreferences == null) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+            sharedPreferences = getDefaultSharedPreferences(context);
         }
         return sharedPreferences;
     }

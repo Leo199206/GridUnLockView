@@ -5,7 +5,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 
 group = 'com.github.Leo199206'
-version = "1.1.4"
+version = "1.1.5"
 android {
     resourcePrefix "androidTool"
     compileSdkVersion 29
