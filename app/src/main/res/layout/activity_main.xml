@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ripple="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/white"
     android:gravity="center"
     android:orientation="vertical">
+
+
+
+    <RadioGroup
+        android:id="@+id/radio_circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="连接线层级" />
+
+        <RadioButton
+            android:id="@+id/circle_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:checked="true"
+            android:text="圆上面" />
+
+        <RadioButton
+            android:id="@+id/circle_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:checked="false"
+            android:text="圆下面" />
+
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radio_arrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="方向箭头" />
+
+        <RadioButton
+            android:id="@+id/arrow_visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:checked="true"
+            android:text="显示" />
+
+        <RadioButton
+            android:id="@+id/arrow_gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:checked="false"
+            android:text="不显示" />
+
+    </RadioGroup>
 
 
     <Button
@@ -17,7 +80,7 @@
         android:background="@color/colorPrimary"
         android:padding="10dp"
         android:text="设置密码"
-        android:textColor="@color/white" />
+        android:textColor="@android:color/white" />
 
 
     <Button
@@ -29,7 +92,7 @@
         android:background="@color/colorPrimary"
         android:padding="10dp"
         android:text="验证密码"
-        android:textColor="@color/white" />
+        android:textColor="@android:color/white" />
 
     <Button
         android:id="@+id/btn_edit"
@@ -40,7 +103,7 @@
         android:background="@color/colorPrimary"
         android:padding="10dp"
         android:text="修改密码"
-        android:textColor="@color/white" />
+        android:textColor="@android:color/white" />
 
 
     <Button
@@ -52,5 +115,5 @@
         android:background="@color/colorPrimary"
         android:padding="10dp"
         android:text="清除密码"
-        android:textColor="@color/white" />
+        android:textColor="@android:color/white" />
 </LinearLayout>

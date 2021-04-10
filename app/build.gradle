@@ -26,6 +26,6 @@ dependencies {
     implementation 'com.r0adkll:slidableactivity:2.0.5'
     implementation 'com.jakewharton:butterknife:10.2.3'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
-    implementation project(':GestureLibrary')
+    implementation project(':GridUnLockView')
     implementation 'androidx.appcompat:appcompat:1.2.0'
 }

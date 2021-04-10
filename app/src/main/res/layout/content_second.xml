@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical"
     tools:context=".ui.activity.SecondActivity"
     tools:showIn="@layout/activity_second">
@@ -23,7 +24,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:text="返回"
-            android:textColor="@color/white"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
 
         <TextView
@@ -33,7 +34,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="请输入密码"
-            android:textColor="@color/white"
+            android:textColor="@android:color/white"
             android:textSize="22sp" />
     </FrameLayout>
 
@@ -41,19 +42,17 @@
         android:id="@+id/tv_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:gravity="center"
         android:padding="10dp"
         android:text="请输入密码"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp" />
 
-    <com.leo.gesturelibrary.view.CustomLockView
+    <com.lock.gridview.view.GridLockView
         android:id="@+id/lv_lock"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@color/white"
         app:color_error_ring="#e91515"
         app:color_on_ring="#64a460"
         app:color_up_ring="#3ce915"
