@@ -56,6 +56,8 @@
         app:color_error_ring="#e91515"
         app:color_on_ring="#64a460"
         app:color_up_ring="#3ce915"
+        app:outer_ring_finger_line_width="2dp"
+        app:outer_ring_un_finger_line_width="1dp"
         app:connecting_line_color="#93d98f"
         app:connecting_line_error_color="#f47e7e"
         app:connecting_line_width="5dp"

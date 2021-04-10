@@ -103,11 +103,11 @@ public class GridLockView extends View {
     //三角形边长
     private float arrowLength;
     //未按下时圆圈的边宽
-    private int noFingerStrokeWidth = 2;
+    private int unFingerStrokeWidth = 2;
     //连接线宽度
     private int connectingLineWidth = 2;
     //按下时圆圈的边宽
-    private int onStrokeWidth = 4;
+    private int fingerStrokeWidth = 4;
     //编辑密码前是否验证
     private boolean isEditVerify = false;
     //是否将连接线绘制在圆的上层
@@ -146,6 +146,8 @@ public class GridLockView extends View {
         innerRingErrorColor = a.getColor(R.styleable.GridLockView_inner_ring_error_color, colorErrorRing);
         innerRingBackgroundErrorColor = a.getColor(R.styleable.GridLockView_inner_ring_background_error_color, colorErrorRing);
         isShowDirectionArrow = a.getBoolean(R.styleable.GridLockView_is_show_direction_arrow, false);
+        fingerStrokeWidth = a.getDimensionPixelOffset(R.styleable.GridLockView_outer_ring_finger_line_width, 4);
+        unFingerStrokeWidth = a.getDimensionPixelOffset(R.styleable.GridLockView_outer_ring_un_finger_line_width, 1);
         a.recycle();
     }
 
@@ -263,15 +265,14 @@ public class GridLockView extends View {
             // 画连线
             drawAllLine(canvas);
             // 画内圈
-            drawAllInnerRing(canvas);
         } else {
             // 画连线
             drawAllLine(canvas);
             // 画外圈
             drawAllOuterRing(canvas);
             // 画所有点
-            drawAllInnerRing(canvas);
         }
+        drawAllInnerRing(canvas);
         // 是否绘制方向图标
         if (isShowDirectionArrow) {
             drawDirectionArrow(canvas);
@@ -388,7 +389,7 @@ public class GridLockView extends View {
         // 绘制外圆
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(colorOnRing);
-        paint.setStrokeWidth(onStrokeWidth);
+        paint.setStrokeWidth(fingerStrokeWidth);
         canvas.drawCircle(p.x, p.y, radius, paint);
     }
 
@@ -406,7 +407,7 @@ public class GridLockView extends View {
         // 绘制圆圈
         paint.setColor(colorErrorRing);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(onStrokeWidth);
+        paint.setStrokeWidth(fingerStrokeWidth);
         canvas.drawCircle(p.x, p.y, radius, paint);
     }
 
@@ -450,7 +451,7 @@ public class GridLockView extends View {
         // 绘制外圆
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(colorUpRing);
-        paint.setStrokeWidth(noFingerStrokeWidth);
+        paint.setStrokeWidth(unFingerStrokeWidth);
         canvas.drawCircle(p.x, p.y, radius, paint);
     }
 

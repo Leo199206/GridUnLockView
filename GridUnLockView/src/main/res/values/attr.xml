@@ -24,6 +24,10 @@
 
         <!--外圈与外圈之间的间距-->
         <attr name="outer_ring_spacing_width" format="dimension" />
+        <!--外圈未按下时线宽度-->
+        <attr name="outer_ring_un_finger_line_width" format="dimension" />
+        <!--外圈按下时线宽度-->
+        <attr name="outer_ring_finger_line_width" format="dimension" />
         <!--内圆大小-->
         <attr name="inner_ring_width" format="dimension" />
         <!--内圆背景大小-->
