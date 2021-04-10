@@ -5,8 +5,8 @@ import android.widget.TextView;
 
 import com.lock.Constants;
 import com.lock.R;
+import com.lock.gridview.GridLockView;
 import com.lock.gridview.enums.LockMode;
-import com.lock.gridview.view.GridLockView;
 import com.lock.ui.base.BaseActivity;
 import com.lock.util.ConfigUtil;
 import com.lock.util.PasswordUtil;
@@ -51,7 +51,7 @@ public class SecondActivity extends BaseActivity {
      */
     @Override
     public void initListener() {
-        lvLock.setOnCompleteListener(onCompleteListener);
+        lvLock.setOnGridUnLockViewListener(onCompleteListener);
         tvBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,21 +94,21 @@ public class SecondActivity extends BaseActivity {
     /**
      * 密码输入监听
      */
-    GridLockView.OnLockViewListener onCompleteListener = new GridLockView.OnLockViewListener() {
+    GridLockView.OnGridUnLockViewListener onCompleteListener = new GridLockView.OnGridUnLockViewListener() {
 
         @Override
-        public void onComplete(LockMode mode, String password, int[] indexs) {
+        public void onComplete(LockMode mode, String password, int[] index) {
             tvHint.setText(getPassWordHint());
             finish();
         }
 
         @Override
-        public void clearPassword(LockMode mode, String password, int[] indexs) {
+        public void clearPassword(LockMode mode, String password, int[] index) {
             ConfigUtil.remove(Constants.PASS_KEY);
         }
 
         @Override
-        public void savePassword(LockMode mode, String password, int[] indexs) {
+        public void savePassword(LockMode mode, String password, int[] index) {
             ConfigUtil.putString(Constants.PASS_KEY, password);
         }
 
@@ -123,7 +123,7 @@ public class SecondActivity extends BaseActivity {
         }
 
         @Override
-        public void onAginInputPassword(LockMode mode, String password, int[] indexs) {
+        public void onAgainInputPassword(LockMode mode, String password, int[] index) {
             tvHint.setText("请再次输入密码");
         }
 

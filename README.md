@@ -1,52 +1,136 @@
-# GestureLibrary
-### 手势解锁库
+#### 使用说明文档 
 
-#### 项目编译环境：Android studio
+九宫格手势解锁控件，用于锁屏或密码验证需求。
 
-#### 属性说明
-
-##### 颜色与尺寸
-* color_up_ring 未按下时九宫格按钮颜色
-* color_on_ring 按下状态下圈的颜色
-* color_error_ring 错误时的颜色
-* connecting_line_color 正常连接线颜色
-* connecting_line_error_color 发生错误时连接线颜色
-* inner_ring_color 内圆颜色
-* inner_ring_background_color 内圆背景圆颜色
-* inner_ring_error_color 内圆错误状态下颜色
-* inner_ring_background_error_color 内圆背景圆错误状态下颜色
-* outer_ring_spacing_width 外圈与外圈之间的间距
-* inner_ring_width 内圆大小
-* inner_ring_background_width 内圆背景大小
-* connecting_line_width 连接线宽度
-* is_line_in_the_round 解锁连接线，是否绘制在圆圈上层
-
-##### 其他
-
-* 设置是否显示绘制方向（三角形指示）: setShowArrow(true);/setShowArrow(false);
-* 设置密码允许输错次数: setInputPasswordMaxCount(3);
-* 设置密码最少长度:setInputPasswordMinLength(3);
-* 设置密码后是否立即保存到本地:setSavePin(true);
-* 设置模式:setMode(LockMode mode);
-* 设置连接线是否绘制在圆的上部:setLineInTheRound()
+#### 效果预览
+<img src="https://raw.githubusercontent.com/Leo199206/GridUnLockView/master/image/device-2021-04-10-203741.gif" width="300" heght="500" align=center />
 
 
-##### LockMode
-
-* 设置密码:LockMode.SETTING_PASSWORD
-* 修改密码:LockMode.EDIT_PASSWORD
-* 验证密码:LockMode.VERIFY_PASSWORD
-* 清除密码:LockMode.CLEAR_PASSWORD
-
-#### Gradle
-Add this to your project's build.gradle file
+#### 依赖
++ 添加maven仓库配置到项目根目录gradle文件下
 
 ```
-implementation 'com.github.Leo199206:GestureLibrary:1.1.4'
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
 ```
-### Version：1.1.1
 
-##### 更新说明：
-###### Version：1.1.4
-* 新增内圈颜色、连接线、连接线是否覆盖在圆上等属性配置
-* fix bug
++ 添加以下maven依赖配置到app模块，gradle文件下
+
+```
+implementation  'com.github.Leo199206:GridUnLockView:1.1.6'
+```
+
+#### 添加到布局
+
+```
+  <com.lock.gridview.GridLockView
+        android:id="@+id/lv_lock"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:color_error_ring="#e91515"
+        app:color_on_ring="#64a460"
+        app:color_up_ring="#3ce915"
+        app:connecting_line_color="#93d98f"
+        app:connecting_line_error_color="#f47e7e"
+        app:connecting_line_width="5dp"
+        app:inner_ring_background_color="#93d98f"
+        app:inner_ring_background_error_color="#f47e7e"
+        app:inner_ring_background_width="20dp"
+        app:inner_ring_color="#3ce915"
+        app:inner_ring_error_color="#e91515"
+        app:inner_ring_width="14dp"
+        app:outer_ring_finger_line_width="2dp"
+        app:outer_ring_spacing_width="50dp"
+        app:outer_ring_un_finger_line_width="1dp" />
+
+```
+
++ 代码配置
+
+```
+  lockView.setMode(LockMode.SETTING_PASSWORD);
+  lockView.setOnGridUnLockViewListener( new GridLockView.OnGridUnLockViewListener() {
+
+        @Override
+        public void onComplete(LockMode mode, String password, int[] index) {
+           
+        }
+
+        @Override
+        public void clearPassword(LockMode mode, String password, int[] index) {
+    
+        }
+
+        @Override
+        public void savePassword(LockMode mode, String password, int[] index) {
+          
+        }
+
+        @Override
+        public void onError(LockMode mode, String errorCount) {
+         
+        }
+
+        @Override
+        public void onPasswordIsShort(LockMode mode, int passwordMinLength) {
+          
+        }
+
+        @Override
+        public void onAgainInputPassword(LockMode mode, String password, int[] index) {
+          
+        }
+
+        @Override
+        public void onInputNewPassword(LockMode mode) {
+          
+        }
+
+        @Override
+        public void onEnteredPasswordsDiffer(LockMode mode) {
+       
+        }
+
+
+        @Override
+        public void onErrorNumberMany() {
+        
+        }
+
+    });
+
+```
+
+
+#### 已定义样式属性
+
+| 属性  | 说明 |
+| --- | --- |
+| color_up_ring | 默认状态，宫格圆圈颜色|
+| color_on_ring | 按下状态，宫格圆圈颜色 |
+| color_error_ring | 解锁密码或者绘制错误时，宫格圆圈颜色 |
+| connecting_line_color | 默认连线颜色 |
+| connecting_line_error_color | 错误连线颜色 | 
+| inner_ring_background_color | 按下时，解锁内圆背景颜色 | 
+| inner_ring_error_color | 绘制错误时，内圆颜色 |
+| inner_ring_background_error_color | 绘制错误时，内圆背景颜色 | 
+| outer_ring_spacing_width | 内圆与外圈间距 | 
+| inner_ring_width | 内圆尺寸大小 | 
+| inner_ring_background_width | 内圆背景大小 |
+| connecting_line_width | 解锁连线宽度 |
+| is_line_in_on_circle_top | 连接线绘制层级控制|
+| is_show_direction_arrow | 是否显示连线箭头|
+
+
+#### 支持
++ 使用过程中，如有问题或者建议，欢迎提出issue
++ 如遇issue解决不了的问题，可以邮件联系：850884963@qq.com
++ 开源维护不易，如果该库对你有帮助，请动动你的小手指，给个star🤩  
+
+#### LICENSE
+GridUnLockView is under the Apache License Version 2.0. See the [LICENSE](https://raw.githubusercontent.com/Leo199206/GridUnLockView/main/LICENSE) file for details.
+LICENSE

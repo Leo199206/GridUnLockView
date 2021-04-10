@@ -48,7 +48,7 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp" />
 
-    <com.lock.gridview.view.GridLockView
+    <com.lock.gridview.GridLockView
         android:id="@+id/lv_lock"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,8 +56,6 @@
         app:color_error_ring="#e91515"
         app:color_on_ring="#64a460"
         app:color_up_ring="#3ce915"
-        app:outer_ring_finger_line_width="2dp"
-        app:outer_ring_un_finger_line_width="1dp"
         app:connecting_line_color="#93d98f"
         app:connecting_line_error_color="#f47e7e"
         app:connecting_line_width="5dp"
@@ -67,5 +65,7 @@
         app:inner_ring_color="#3ce915"
         app:inner_ring_error_color="#e91515"
         app:inner_ring_width="14dp"
-        app:outer_ring_spacing_width="50dp" />
+        app:outer_ring_finger_line_width="2dp"
+        app:outer_ring_spacing_width="50dp"
+        app:outer_ring_un_finger_line_width="1dp" />
 </LinearLayout>

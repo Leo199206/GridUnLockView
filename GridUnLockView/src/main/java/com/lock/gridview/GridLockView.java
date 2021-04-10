@@ -1,4 +1,4 @@
-package com.lock.gridview.view;
+package com.lock.gridview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.lock.gridview.R;
 import com.lock.gridview.entity.Point;
 import com.lock.gridview.enums.LockMode;
 import com.lock.gridview.util.LockUtil;
@@ -51,7 +50,7 @@ public class GridLockView extends View {
     //刷新
     private TimerTask task = null;
     //监听
-    private OnLockViewListener lockViewListener;
+    private OnGridUnLockViewListener lockViewListener;
     //错误限制 默认为4次
     private int errorNumber = 4;
     //记录上一次滑动的密码
@@ -751,7 +750,7 @@ public class GridLockView extends View {
         if (showTimes == 0) {
             oldPassword = password;
             if (lockViewListener != null) {
-                lockViewListener.onAginInputPassword(mode, password, indexs);
+                lockViewListener.onAgainInputPassword(mode, password, indexs);
             }
             showTimes++;
             reset();
@@ -850,7 +849,7 @@ public class GridLockView extends View {
      *
      * @param mCompleteListener
      */
-    public void setOnCompleteListener(OnLockViewListener mCompleteListener) {
+    public void setOnGridUnLockViewListener(OnGridUnLockViewListener mCompleteListener) {
         this.lockViewListener = mCompleteListener;
     }
 
@@ -871,7 +870,7 @@ public class GridLockView extends View {
     /**
      * 轨迹球画完监听事件
      */
-    public interface OnLockViewListener {
+    public interface OnGridUnLockViewListener {
         /**
          * 画完了
          */
@@ -901,7 +900,7 @@ public class GridLockView extends View {
         /**
          * 设置密码再次输入密码
          */
-        void onAginInputPassword(LockMode mode, String password, int[] indexs);
+        void onAgainInputPassword(LockMode mode, String password, int[] indexs);
 
 
         /**

@@ -34,8 +34,9 @@
         <attr name="inner_ring_background_width" format="dimension" />
         <!--连接线宽度-->
         <attr name="connecting_line_width" format="dimension" />
-        <!-- 解锁连接线，是否绘制在圆圈上层       -->
+        <!--解锁连接线，是否绘制在圆圈上层       -->
         <attr name="is_line_in_on_circle_top" format="boolean" />
+        <!--是否显示绘制时，连线方向箭头-->
         <attr name="is_show_direction_arrow" format="boolean" />
 
     </declare-styleable>
