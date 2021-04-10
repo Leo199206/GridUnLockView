@@ -26,7 +26,7 @@ import java.util.TimerTask;
 /**
  * 九宫格手势解锁控件
  */
-public class GridLockView extends View {
+public class GridUnLockView extends View {
     //控件宽度
     private float width = 0;
     //控件高度
@@ -122,11 +122,11 @@ public class GridLockView extends View {
         }
     };
 
-    public GridLockView(Context context, AttributeSet attrs) {
+    public GridUnLockView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public GridLockView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public GridUnLockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.GridLockView, defStyleAttr, 0);
@@ -995,7 +995,7 @@ public class GridLockView extends View {
      *
      * @param isTop
      */
-    public GridLockView setLineOnCircleTop(boolean isTop) {
+    public GridUnLockView setLineOnCircleTop(boolean isTop) {
         isLineOnCircle = isTop;
         return this;
     }

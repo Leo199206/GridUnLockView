@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import com.lock.Constants;
 import com.lock.R;
-import com.lock.gridview.GridLockView;
+import com.lock.gridview.GridUnLockView;
 import com.lock.gridview.enums.LockMode;
 import com.lock.ui.base.BaseActivity;
 import com.lock.util.ConfigUtil;
@@ -22,7 +22,7 @@ public class SecondActivity extends BaseActivity {
     @BindView(R.id.tv_text)
     TextView tvText;
     @BindView(R.id.lv_lock)
-    GridLockView lvLock;
+    GridUnLockView lvLock;
     @BindView(R.id.tv_hint)
     TextView tvHint;
 
@@ -94,7 +94,7 @@ public class SecondActivity extends BaseActivity {
     /**
      * 密码输入监听
      */
-    GridLockView.OnGridUnLockViewListener onCompleteListener = new GridLockView.OnGridUnLockViewListener() {
+    GridUnLockView.OnGridUnLockViewListener onCompleteListener = new GridUnLockView.OnGridUnLockViewListener() {
 
         @Override
         public void onComplete(LockMode mode, String password, int[] index) {

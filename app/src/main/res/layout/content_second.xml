@@ -48,7 +48,7 @@
         android:textColor="@color/colorPrimaryDark"
         android:textSize="18sp" />
 
-    <com.lock.gridview.GridLockView
+    <com.lock.gridview.GridUnLockView
         android:id="@+id/lv_lock"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
