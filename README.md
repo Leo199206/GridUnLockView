@@ -3,7 +3,7 @@
 九宫格手势解锁控件，用于锁屏或密码验证需求。
 
 #### 效果预览
-<img src="https://raw.githubusercontent.com/Leo199206/GridUnLockView/master/image/device-2021-04-10-203741.gif" width="300" heght="500" align=center />
+<img src="https://raw.githubusercontent.com/Leo199206/GridUnLockView/master/device-2021-04-10-203741.gif" width="300" heght="500" align=center />
 
 
 #### 依赖
